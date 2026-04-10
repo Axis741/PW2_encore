@@ -1,0 +1,159 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:system-ui, -apple-system, sans-serif;
+}
+
+body{
+    background: url("../images/fondo-encore.png") no-repeat center center/cover;
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+header{
+    background-color:#7c51c2;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 40px;
+}
+
+.logo img{
+    height:40px;
+}
+
+nav a{
+    text-decoration:none;
+    color:white;
+    margin:0 15px;
+    font-weight:500;
+}
+
+.icons a{
+    color:white;
+    margin-left:20px;
+    font-size:20px;
+}
+
+.admin-container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:85vh;
+    padding:40px;
+}
+
+.admin-card{
+    background:#1a1a1a;
+    border: 1px solid #7c51c2;
+    width:600px;
+    max-width:95%;
+    border-radius:25px;
+    padding:40px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.5);
+}
+
+.admin-card h1{
+    margin-bottom:30px;
+    text-align:center;
+    color: white;
+}
+
+.input-group{
+    margin-bottom:20px;
+    display:flex;
+    flex-direction:column;
+}
+
+.input-group label{
+    margin-bottom:5px;
+    font-size:14px;
+    opacity:0.7;
+    color: white;
+}
+
+.input-group input{
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#2a2a2a;
+    color:white;
+    outline:none;
+}
+
+.image-preview{
+    margin:20px 0;
+    display:flex;
+    justify-content:center;
+}
+
+.image-preview img{
+    max-width:200px;
+    border-radius:15px;
+    display:none;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:30px;
+    background:linear-gradient(135deg,#7c51c2,#512da8);
+    color:white;
+    font-weight:500;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:scale(1.05);
+    box-shadow:0 10px 25px rgba(124,81,194,0.6);
+}
+
+textarea{
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#2a2a2a;
+    color:white;
+    outline:none;
+    resize:none;
+    height:100px;
+}
+
+select{
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#2a2a2a;
+    color:white;
+    outline:none;
+}
+
+/* TALLAS
+.tallas-group{
+    display:none;
+} */
+
+.tallas{
+    display:flex;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.tallas label{
+    background:#2a2a2a;
+    padding:8px 12px;
+    border-radius:20px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.tallas input{
+    margin-right:5px;
+}
+
+.tallas label:hover{
+    background:#7c51c2;
+}
