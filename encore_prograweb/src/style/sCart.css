@@ -7,7 +7,7 @@
 
 /* BODY */
 body{
-    background: url("../images/fondo-encore.png") no-repeat center center/cover;
+    background: url("../assets/fondo-encore.png") no-repeat center center/cover;
     background-attachment: fixed;
     min-height: 100vh;
 }

@@ -6,7 +6,7 @@
 }
 
 body{
-    background: url("../images/fondo-encore.png") no-repeat center center/cover;
+    background: url("../assets/fondo-encore.png") no-repeat center center/cover;
     background-attachment: fixed;
     min-height: 100vh;
     color:white;
@@ -68,13 +68,13 @@ nav a:hover{
 }
 
 /* IMAGENES DE FONDO */
-.event-card.bts{
+/* .event-card.bts{
     background-image:url("https://i.scdn.co/image/ab6761610000e5eb1ba8fc5f5c73e7e9313cc6eb");
-}
+} */
 
-.event-card.shinee{
+/* .event-card.shinee{
     background-image:url("https://www.eluniversal.com.mx/resizer/v2/TS5M67OSANHTVB5HKLKQ4R2XLA.jpg?auth=1de1c7b2b3e4a343c48f3f4f8b15093944c676454c9a8d028c4f31e7c666cd68&smart=true&height=666");
-}
+} */
 
 /* Overlay oscuro elegante */
 .event-card::before{

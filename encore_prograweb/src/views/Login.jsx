@@ -1,0 +1,64 @@
+// <!DOCTYPE html>
+// <html lang="es">
+// <head>
+// <meta charset="UTF-8">
+// <meta name="viewport" content="width=device-width, initial-scale=1.0">
+// <title>Iniciar Sesión</title>
+
+// <link rel="stylesheet" href="estilos/sLogin.css">
+// <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+// <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+// </head>
+// <body>
+
+import Logo from '../assets/titulo-encore.png'
+import '../style/sLogin.css'
+
+function Login(){
+    return(
+        <>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"></link>
+        <header>
+            <div class="logo">
+                <img src={Logo} alt="Encore Merch Logo"/>
+            </div>
+
+            <nav className="navegar">
+                <a href="/">MERCH</a>
+                <a href="/eventos">EVENTOS</a>
+                <a href="/artistas">ARTISTAS/BANDAS</a>
+            </nav>
+        </header>
+        <div class="login-container">
+
+            <div class="login-card">
+                <h1>Bienvenido</h1>
+                <p>Inicia sesión para continuar</p>
+
+                <form>
+                    <div class="input-group">
+                        <i class="fa-solid fa-circle-user"></i>
+                        <input type="email" placeholder="Usuario" required/>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" placeholder="Contraseña" required/>
+                    </div>
+
+                    <a href="/" class="btnInicioS">Iniciar Sesión</a>
+
+                    <div class="extra-links">
+                        <a href="/registro">Crear cuenta</a>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+        </>
+    )
+}
+
+export default Login

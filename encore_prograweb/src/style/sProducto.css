@@ -5,8 +5,15 @@
     font-family: 'Poppins', sans-serif;
 }
 
+/* #root {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+} */
+
 body{
-    background: url("https://www.tarracoarena.com/wp-content/uploads/2023/06/2023-Concierto-TarracoArena.jpg") no-repeat center center/cover;
+    background: url("../assets/fondo-encore.png") no-repeat center center/cover;
     background-attachment: fixed;
     min-height: 100vh;
 }
@@ -80,11 +87,13 @@ nav a:hover{
 }
 
 .product-info h1{
-    margin-bottom: 10px;
+    margin-bottom: 30px;
+    font-family: 'Poppins', sans-serif;
 }
 
 .product-info h2{
     margin-bottom: 20px;
+    font-family: 'Poppins', sans-serif;
 }
 
 /* Sizes */

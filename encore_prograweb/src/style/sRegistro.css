@@ -6,26 +6,60 @@
 }
 
 body{
-    height:100vh;
+    /* height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    background: url("../images/fondo-encore.png") no-repeat center center/cover;
+    background: url("../assets/fondo-encore.png") no-repeat center center/cover;
     background-attachment: fixed;
     min-height: 100vh;
     background-size:cover;
     background-position:center;
     position:relative;
-    color: white;
+    color: white; */
+
+    background: url("../assets/fondo-encore.png") no-repeat center center/cover;
+    background-attachment: fixed;
+    min-height: 100%;
+    width: 100%;
 }
 
 /* Overlay oscuro elegante */
-body::before{
+/* body::before{
     content:"";
     position:absolute;
     inset:0;
     background:rgba(0,0,0,0.65);
     backdrop-filter:blur(3px);
+} */
+
+header{
+    background-color:#7c51c2;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 40px;
+}
+
+.logo img{
+    height:40px;
+}
+
+.navegar{
+    margin-right: 450px;
+}
+
+nav a{
+    text-decoration:none;
+    color:white;
+    margin:0 15px;
+    font-weight:500;
+}
+
+.icons a{
+    color:white;
+    margin-left:20px;
+    font-size:20px;
 }
 
 /* CONTENEDOR */

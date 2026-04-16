@@ -9,9 +9,9 @@ app.use(bodyParser.json());
 app.use('/api/users', usersRoute);
 
 const port = 8080;
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+// app.get('/', (req, res) => {
+//   res.send('Hello World!')
+// })
 
 mongoose.connect(uri)
   .then(() => {

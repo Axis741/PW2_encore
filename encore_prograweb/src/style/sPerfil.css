@@ -6,7 +6,7 @@
 }
 
 body{
-    background: url("../images/fondo-encore.png") no-repeat center center/cover;
+    background: url("../assets/fondo-encore.png") no-repeat center center/cover;
     background-attachment: fixed;
     min-height: 100vh;
     color:white;
@@ -141,11 +141,13 @@ button{
     background:#333;
     color:white;
     text-decoration: none;
+    font-size: 14px;
     border-radius:30px;
     width: 150px;
     justify-content: center;
     text-align: center;
     margin-top: 5px;
+    padding:12px 25px;
 }
 
 .logout:hover{

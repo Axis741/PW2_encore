@@ -6,7 +6,7 @@
 }
 
 body{
-    background: url("../images/fondo-encore.png") no-repeat center center/cover;
+    background: url("../assets/fondo-encore.png") no-repeat center center/cover;
     background-attachment: fixed;
     min-height: 100vh;
 }
@@ -94,7 +94,7 @@ nav a{
     display:none;
 }
 
-button{
+.btn_subir{
     width:100%;
     padding:12px;
     border:none;
@@ -106,7 +106,7 @@ button{
     transition:0.3s;
 }
 
-button:hover{
+.btn_subir:hover{
     transform:scale(1.05);
     box-shadow:0 10px 25px rgba(124,81,194,0.6);
 }
