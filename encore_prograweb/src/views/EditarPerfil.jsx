@@ -10,13 +10,23 @@
 // </head>
 // <body>
 
+import { useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../assets/titulo-encore.png'
-import '../style/sPerfil.css'
+import '../style/sEditarPerfil.css'
 
-function Perfil(){
+function EditarPerfil(){
+
+    const [preview, setPreview] = useState("");
     const navigate = useNavigate();
-
+    
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if(file){
+            setPreview(URL.createObjectURL(file));
+        }
+    };
+    
     return(
         <>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
@@ -44,32 +54,34 @@ function Perfil(){
             <div class="profile-card">
 
                 <div class="profile-left">
-                    <img src="https://i.pravatar.cc/300" alt="Foto de perfil"/>
-                    <h2>Ana López</h2>
-                    <p>@analovesmusic</p>
+                    <h2>Editar imagen</h2>
+                    <input type="file" accept="image/*" onChange={handleImageChange} required/>
+
+                    <div class="image-preview">
+                        {preview && <img src={preview} alt='preview'></img>}
+                    </div>
                 </div>
 
                 <div class="profile-right">
-                    <h3>Información Personal</h3>
+                    <h3>Editar Información</h3>
 
                     <div class="info-item">
                         <span>Usuario</span>
-                        <p>AnaLovesMusic</p>
+                        <input type='text' value={"AnaLovesMusic"}></input>
                     </div>
 
                     <div class="info-item">
                         <span>Edad</span>
-                        <p>24</p>
+                        <input type='number' value={"24"}></input>
                     </div>
 
                     <div class="info-item">
                         <span>Contraseña</span>
-                        <p>.............</p>
+                        <input type='password' placeholder='Nueva contraseña'></input>
                     </div>
 
                     <div class="buttons">
-                        <button class="edit" onClick={() => navigate("/EditarPerfil")}>Editar Perfil</button>
-                        <a href="/login" class="logout">Cerrar Sesión</a>
+                        <button class="edit" onClick={() => navigate("/perfil")}>Guardar cambios</button>
                     </div>
 
                 </div>
@@ -81,4 +93,4 @@ function Perfil(){
     )
 }
 
-export default Perfil
+export default EditarPerfil

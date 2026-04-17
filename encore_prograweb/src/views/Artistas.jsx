@@ -10,10 +10,27 @@
 // </head>
 // <body>
 
+import { useState } from 'react'
 import Logo from '../assets/titulo-encore.png'
 import '../style/sArtistas.css'
 
 function Artistas(){
+
+    const [showModal, setShowModal] = useState(false);
+
+    const handleGuardar = (e) => {
+        e.preventDefault()
+        setShowModal(false)
+    }
+
+    const [preview, setPreview] = useState("");
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if(file){
+            setPreview(URL.createObjectURL(file));
+        }
+    };
     return(
         <>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
@@ -86,6 +103,34 @@ function Artistas(){
             </a>
 
         </main>
+
+        <button className="btn_Add" onClick={() => setShowModal(true)}>+</button>
+
+        {showModal && (
+            <div className="modal-overlay">
+                <div className="modal">
+                    <h1>Agregar Artista</h1>
+
+                    <form onSubmit={handleGuardar}>
+                        <div className="input-group">
+                            <label>Nombre del artista / banda</label>
+                            <input type="text" required />
+                        </div>
+
+                        <div className="input-group">
+                            <label>Imagen</label>
+                            <input type="file" accept="image/*" onChange={handleImageChange} required />
+                        </div>
+
+                        <div className="image-preview">
+                            {preview && <img src={preview} alt='preview'></img>}
+                        </div>
+
+                        <button type="submit" className="btn-save">Guardar Artista</button>
+                    </form>
+                </div>
+            </div>
+        )}
         </>
     )
 }

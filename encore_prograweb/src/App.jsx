@@ -8,6 +8,7 @@ import Perfil from './views/Perfil'
 import Carrito from './views/Cart'
 import Login from './views/Login'
 import Registro from './views/Registro'
+import EditarPerfil from './views/EditarPerfil'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
       <Route path="/carrito" element={<Carrito/>}/>
       <Route path="/login" element={<Login/>}/>
       <Route path="/registro" element={<Registro/>}/>
+      <Route path="/EditarPerfil" element={<EditarPerfil/>}/>
     </Routes>
   )
 }

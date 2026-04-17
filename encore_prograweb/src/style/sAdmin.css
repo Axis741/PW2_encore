@@ -82,6 +82,33 @@ nav a{
     outline:none;
 }
 
+.input-group select{
+    width:100%;
+    margin-top:5px;
+    padding:10px;
+    border-radius:10px;
+    border:none;
+    outline:none;
+    background:#2a2a2a;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.input-group select:focus{
+    border:1px solid #7c51c2;
+}
+
+.input-group select{
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
 .image-preview{
     margin:20px 0;
     display:flex;
@@ -91,7 +118,7 @@ nav a{
 .image-preview img{
     max-width:200px;
     border-radius:15px;
-    display:none;
+    display:block;
 }
 
 .btn_subir{

@@ -10,28 +10,27 @@
 
 // </head>
 // <body>
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sAdmin.css'
 
 function Admin(){
-    const input = document.getElementById("imageInput");
-    const preview = document.getElementById("preview");
-    const tipo = document.getElementById("tipoProducto");
-    const tallasGroup = document.getElementById("tallasGroup");
+    const [preview, setPreview] = useState("");
 
-    input.addEventListener("change", () => {
-        const file = input.files[0];
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
         if(file){
-            preview.src = URL.createObjectURL(file);
-            preview.style.display = "block";
+            setPreview(URL.createObjectURL(file));
         }
-    });
+    };
+
     return(
         <>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></link>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"></link>
+
         <header>
-            <div class="logo">
+            <div className="logo">
                 <img src={Logo} alt="Encore Merch Logo"/>
             </div>
 
@@ -68,7 +67,13 @@ function Admin(){
 
                     <div class="input-group">
                         <label>Artista / Banda</label>
-                        <input type="text" placeholder="Ej. BTS" required/>
+                        <select required>
+                            <option value="">Selecciona un artista</option>
+                            <option value="bts">BTS</option>
+                            <option value="coldplay">Coldplay</option>
+                            <option value="taylor">Taylor Swift</option>
+                            <option value="conanGray">Conan Gray</option>
+                        </select>
                     </div>
 
                     <div class="input-group">
@@ -94,11 +99,11 @@ function Admin(){
 
                     <div class="input-group">
                         <label>Imagen del producto</label>
-                        <input type="file" id="imageInput" accept="image/*" required/>
+                        <input type="file" accept="image/*" onChange={handleImageChange} required/>
                     </div>
 
                     <div class="image-preview">
-                        <img id="preview" src="" alt=""/>
+                        {preview && <img src={preview} alt='preview'></img>}
                     </div>
 
                     <button type="submit" className="btn_subir">Subir Producto</button>
