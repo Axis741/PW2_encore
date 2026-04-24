@@ -8,6 +8,12 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const uri = 'mongodb://localhost:27017/Encore_Merch';
 
+const cors = require('cors');
+
+app.use(cors({
+  origin: 'http://localhost:5173'
+}));
+
 app.use(bodyParser.json());
 app.use('/api/users', usersRoute);
 app.use('/api/artistas', artistasRoute);

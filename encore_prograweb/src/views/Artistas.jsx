@@ -13,14 +13,25 @@
 import { useState } from 'react'
 import Logo from '../assets/titulo-encore.png'
 import '../style/sArtistas.css'
+import { crearArtista } from '../../../services/artistasService';
 
 function Artistas(){
 
     const [showModal, setShowModal] = useState(false);
 
-    const handleGuardar = (e) => {
-        e.preventDefault()
-        setShowModal(false)
+    const [nombre, setNombre] = useState("");
+
+    const handleGuardar = async (e) => {
+        e.preventDefault();
+
+        const nuevoArtista = {
+            nombre: nombre,
+            imagen: preview // guardamos la preview (base64/url temporal)
+        };
+        const res = await crearArtista(nuevoArtista);
+        console.log(res);
+
+        setShowModal(false);
     }
 
     const [preview, setPreview] = useState("");
@@ -114,7 +125,7 @@ function Artistas(){
                     <form onSubmit={handleGuardar}>
                         <div className="input-group">
                             <label>Nombre del artista / banda</label>
-                            <input type="text" required />
+                            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
                         </div>
 
                         <div className="input-group">

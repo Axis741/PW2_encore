@@ -19,18 +19,18 @@ router.use((req, res, next) => {
 
 
 // GET ALL + CREATE
-router.route('/artistas')
+router.route('/')
   .get(getArtistas)       // Obtener todos los artistas
   .post(createArtista);   // Crear artista
 
 
 // PRODUCTOS DE UN ARTISTA
-router.route('/artistas/:id/productos')
+router.route('/:id/productos')
   .get(getProductosByArtista);
 
 
 // GET BY ID + UPDATE + DELETE
-router.route('/artistas/:id')
+router.route('/:id')
   .get(getArtistaById)    // Obtener artista por ID
   .put(updateArtista)     // Actualizar artista
   .delete(deleteArtista); // Eliminar artista
