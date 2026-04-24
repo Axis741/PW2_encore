@@ -1,4 +1,4 @@
-const productosModel = require('../models/productos_model');
+const productosModel = require('../../models/productos_model');
 
 
 // @desc    Get all products
