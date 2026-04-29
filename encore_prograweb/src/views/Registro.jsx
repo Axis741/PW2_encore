@@ -61,7 +61,7 @@ function Registro(){
                         <input type="password" placeholder="Confirmar contraseña" required/>
                     </div>
 
-                    <a href="Login.html" class="btnCrearC">Crear Cuenta</a>
+                    <a href="/login" class="btnCrearC">Crear Cuenta</a>
 
                     <div class="extra-links">
                         <a href="/login">¿Ya tienes cuenta? Inicia sesión</a>

@@ -26,7 +26,7 @@ function Artistas(){
 
         const nuevoArtista = {
             nombre: nombre,
-            imagen: preview // guardamos la preview (base64/url temporal)
+            imagen: preview
         };
         const res = await crearArtista(nuevoArtista);
         console.log(res);
@@ -120,6 +120,10 @@ function Artistas(){
         {showModal && (
             <div className="modal-overlay">
                 <div className="modal">
+                    <button className='btnClose' onClick={() => setShowModal(false)}>
+                        <i className="fa-solid fa-xmark"></i>
+                    </button>
+
                     <h1>Agregar Artista</h1>
 
                     <form onSubmit={handleGuardar}>

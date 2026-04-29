@@ -155,6 +155,7 @@ nav a:hover{
 
 /* VENTANA */
 .modal{
+    position: relative;
     background:#1a1a1a;
     border: 1px solid #7c51c2;
     width:600px;
@@ -213,4 +214,50 @@ nav a:hover{
 .btn-save:hover{
     transform:scale(1.05);
     box-shadow:0 10px 25px rgba(124,81,194,0.6);
+}
+
+.btnClose{
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: white;
+    transition: 0.3s;
+}
+
+.btnClose:hover{
+    transform:scale(1.05);
+}
+
+@media (max-width: 900px){
+    header{
+        gap: 5px;
+    }
+
+    .logo img{
+        width: 230px;
+    }
+
+    nav a{
+        font-size: 15px;
+    }
+
+    .icons a{
+        font-size: 20px;
+        margin-left: 20px;
+    }
+
+    .artists{
+        grid-template-columns: repeat(2, 1fr);
+        gap: 40px;
+        padding: 30px;
+    }
+
+    .artist-card img{
+        width: 250px;
+        height: 250px;
+    }
 }

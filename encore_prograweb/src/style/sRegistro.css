@@ -67,6 +67,7 @@ nav a{
     position:relative;
     z-index:2;
     width:100%;
+    min-height: calc(100vh - 150px);
     display:flex;
     justify-content:center;
     align-items:center;
@@ -155,4 +156,36 @@ nav a{
 
 .extra-links a:hover{
     color:white;
+}
+
+@media (max-width: 900px){
+    header{
+        gap: 5px;
+    }
+
+    .logo img{
+        width: 220px;
+    }
+
+    nav{
+        margin-left: 25px;
+    }
+
+    nav a{
+        font-size: 15px;
+    }
+
+    .register-card{
+        width: 520px;
+        height: 600px;
+    }
+
+    .register-card h1{
+        font-size:45px;
+    }
+
+    .register-card p{
+        font-size: 20px;
+        margin-top: 25px;
+    }
 }
