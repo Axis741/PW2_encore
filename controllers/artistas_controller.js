@@ -78,7 +78,13 @@ exports.getProductosByArtista = async (req, res) => {
 
 exports.createArtista = async (req, res) => {
   try {
-    const artista = await artistaModel.create(req.body);
+    console.log(req.file);
+    console.log(req.body);
+
+    const artista = await artistaModel.create({
+      nombre: req.body.nombre,
+      foto: req.file ? req.file.filename : null
+    });
 
     res.status(201).json({
       success: true,
@@ -86,6 +92,7 @@ exports.createArtista = async (req, res) => {
     });
 
   } catch (error) {
+    console.error(error);
     res.status(400).json({ success: false, message: error.message });
   }
 };

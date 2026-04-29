@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const upload =  require("../middlewares/upload");
 
 const {
   getArtistas,
@@ -21,7 +22,7 @@ router.use((req, res, next) => {
 // GET ALL + CREATE
 router.route('/')
   .get(getArtistas)       // Obtener todos los artistas
-  .post(createArtista);   // Crear artista
+  .post(upload.single("imagen"),createArtista);   // Crear artista
 
 
 // PRODUCTOS DE UN ARTISTA

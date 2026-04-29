@@ -20,6 +20,8 @@ app.use('/api/artistas', artistasRoute);
 app.use('/api/ordenes', ordenesRoute);
 app.use('/api/reportes', reportesRoute);
 
+app.use("/uploads", express.static("uploads"));
+
 const port = 8080;
 // app.get('/', (req, res) => {
 //   res.send('Hello World!')
