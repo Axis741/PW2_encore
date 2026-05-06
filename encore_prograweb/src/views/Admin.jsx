@@ -10,12 +10,23 @@
 
 // </head>
 // <body>
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sAdmin.css'
 
 function Admin(){
     const [preview, setPreview] = useState("");
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+        if(!usuario){
+            navigate("/login", {state: {mensaje: "Debe iniciar sesión primero."}});
+        }
+    }, []);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];

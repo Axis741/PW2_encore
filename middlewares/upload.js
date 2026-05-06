@@ -7,12 +7,22 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname);
-        const nombre = req.body.nombre
-            .toLowerCase()
-            .replace(/\s+/g, "_")
-            .replace(/[^a-z0-9_]/g, "");
+        
+        let base = "archivo";
 
-        cb(null, nombre + "_" + Date.now() + ext);
+        if(req.body.usuario){
+            base = req.body.usuario
+                .toLowerCase()
+                .replace(/\s+/g, "_")
+                .replace(/[^a-z0-9_]/g, "");
+        }else if(req.body.nombre){
+            base = req.body.nombre
+                .toLowerCase()
+                .replace(/\s+/g, "_")
+                .replace(/[^a-z0-9_]/g, "");
+        }
+
+        cb(null, base + "_" + Date.now() + ext);
     }
 });
 

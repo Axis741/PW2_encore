@@ -1,4 +1,5 @@
 const usersModel = require('../models/users_model');
+const bcrypt = require("bcrypt");
 //const users = [ { id: 1, name: 'Hadi Soufan' }, { id: 2, name: 'Melia Malik' }, { id: 3, name: 'Zayn Cerny' }];
 // @desc    Get all users
 // @route   GET /api/v1/users
@@ -9,46 +10,55 @@ exports.getUsers = async (req, res) => {
 };
 
 //-------------CREATE--------------
-// @desc    Create new user
-// @route   POST /api/v1/create
-// @access  Public
+exports.createUser = async (req, res) => {
+  try{
+    const cycles = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.contrasena, cycles);
 
-// exports.createUser = async (req, res) => {
-//   const {name} = await usersModel.create(req.body);  
-//   //const id = users.length + 1;
-//   //users.push({ id, name });
-//   res.status(201).json({ success: true, user: { id, name }, message: 'User created successfully' });
-// };
+    const usuario = await usersModel.create({
+      nombre: req.body.nombre,
+      fecha_nac: req.body.fecha_nac,
+      usuario: req.body.usuario,
+      contrasena: hashedPassword,
+      imagen: req.file ? req.file.filename : null
+    });
 
-//----------UPDATE-----------------
-// @desc    Update a user
-// @route   PATCH /api/v1/users/:id
-// @access  Public
+    res.status(201).json({
+      success: true,
+      data: usuario
+    });
+  }catch(error){
+    console.error(error);
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
 
-// exports.updateUser = (req, res) => {
-//   const id = req.params.id;
-//   const { name } = req.body;
-//   const user = users.find(user => user.id == id);
-//   if (user) {
-//    user.name = name;
-//     res.json({ message: 'User updated successfully', user });
-//   } else {
-//     res.status(404).json({ message: `User with ID ${id} not found` });
-//   }
-// };
+//-------------LOGIN--------------
+exports.loginUser = async (req, res) => {
+  try{
+    const {usuario, contrasena} = req.body;
 
-//-----------DELETE-------------
-// @desc    Delete a user
-// @route   DELETE /api/v1/users/:id
-// @access  Public
+    const usuarioEncontrado = await usersModel.findOne({usuario});
 
-// exports.deleteUser = (req, res) => {
-//   const id = req.params.id;
-//   const index = users.findIndex(user => user.id == id);
-//   if (index != -1) {
-//     users.splice(index, 1);
-//     res.json({ message: 'User deleted successfully' });
-//   } else {
-//     res.status(404).json({ message: `User with ID ${id} not found` });
-//   }
-// };
+    if(!usuarioEncontrado){
+      return res.status(400).json({success: false, message: "El usuario no existe"});
+    }
+
+    const isValid = await bcrypt.compare(
+      contrasena,
+      usuarioEncontrado.contrasena
+    );
+
+    if(!isValid){
+      return res.status(400).json({ success: false, message: "La contraseña es incorrecta"});
+    }
+
+    res.status(200).json({
+      success: true,
+      data: usuarioEncontrado
+    });
+  }catch(error){
+    console.error(error);
+    res.status(400).json({ success: false, message: error.message });
+  }
+};

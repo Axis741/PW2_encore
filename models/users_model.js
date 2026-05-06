@@ -16,6 +16,10 @@ const usuariosSchema = new mongoose.Schema({
   fecha_nac: {
     type: Date,
     required: [true, "Favor de ingresar su fecha de nacimiento"]
+  },
+  imagen: {
+    type: String,
+    required: [true, "Favor de seleccionar una foto de perfil"]
   }
 });
 

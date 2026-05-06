@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router()
-const { getUsers} = 
+const { getUsers, createUser, loginUser} = 
 require('../controllers/users_controller');
+const upload = require("../middlewares/upload");
 
 router.use((req, res, next) => {
-  console.log('Time: ', Date.now())
-  console.dir(req);
-  next()
-})
+  console.log('Time: ', Date.now());
+  next();
+});
 // router.get('/', (req, res) => {
 //   res.send('Users home page')
 // })
@@ -15,8 +15,13 @@ router.use((req, res, next) => {
 //   res.send('About users')
 // })
 
-router.route('/users').get(getUsers); // Read: Get all users
-// router.route('/create').post(createUser); // Create: Create a new user  
+router.route('/')
+  .get(getUsers)
+  .post(upload.single("imagen"),createUser);
+
+router.route('/login')
+  .post(loginUser);
+  
 // router.route('/users/:id')
 //   .patch(updateUser) // Update: Update a user by ID
 //   .delete(deleteUser); // Delete: Delete a user by ID

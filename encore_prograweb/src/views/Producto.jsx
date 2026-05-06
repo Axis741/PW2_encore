@@ -8,11 +8,21 @@
 //     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 // </head>
 // <body>
-
+import { useNavigate } from 'react-router-dom';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sProducto.css'
 
 function Producto(){
+    const navigate = useNavigate();
+
+    const handleAgregarCarrito = () => {
+        const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+        if(!usuario){
+            navigate("/login", {state: {mensaje: "Debe iniciar sesión primero."}});
+        }
+    };
+
     return(
         <>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
@@ -60,15 +70,15 @@ function Producto(){
             <p><strong>Delivery:</strong> Arrives in 3-5 days</p>
 
             <div className="buy-section">
-                <button className="add-cart">
+                <button className="add-cart" onClick={handleAgregarCarrito}>
                     <i className="fa-solid fa-cart-shopping"></i>
                 </button>
 
-                <select>
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                </select>
+                <div className="item-quantity">
+                    <button>-</button>
+                    <span>1</span>
+                    <button>+</button>
+                </div>
             </div>
 
             <div className="description">

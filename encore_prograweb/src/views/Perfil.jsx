@@ -9,13 +9,42 @@
 // <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 // </head>
 // <body>
-
+import { useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sPerfil.css'
 
 function Perfil(){
     const navigate = useNavigate();
+    const [usuarioInfo, setUsuarioInfo] = useState("");
+
+    useEffect(() => {
+        const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+        if(!usuario){
+            navigate("/login", {state: {mensaje: "Debe iniciar sesión primero."}});
+        }else{
+            setUsuarioInfo(usuario);
+        }
+    }, []);
+
+    const calcularEdad = (fecha) => {
+        const hoy = new Date();
+        const nacimiento = new Date(fecha);
+        let edad = hoy.getFullYear() - nacimiento.getFullYear();
+        const mes = hoy.getMonth() - nacimiento.getMonth();
+
+        if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+            edad--;
+        }
+
+        return edad;
+    };
+
+    const logOut = () => {
+        localStorage.removeItem("usuario");
+        navigate("/login");
+    };
 
     return(
         <>
@@ -44,9 +73,9 @@ function Perfil(){
             <div class="profile-card">
 
                 <div class="profile-left">
-                    <img src="https://i.pravatar.cc/300" alt="Foto de perfil"/>
-                    <h2>Ana López</h2>
-                    <p>@analovesmusic</p>
+                    <img src={`http://localhost:8080/uploads/${usuarioInfo?.imagen}`} alt="Foto de perfil"/>
+                    <h2>{usuarioInfo?.nombre}</h2>
+                    <p>@{usuarioInfo?.usuario}</p>
                 </div>
 
                 <div class="profile-right">
@@ -54,12 +83,12 @@ function Perfil(){
 
                     <div class="info-item">
                         <span>Usuario</span>
-                        <p>AnaLovesMusic</p>
+                        <p>{usuarioInfo?.usuario}</p>
                     </div>
 
                     <div class="info-item">
                         <span>Edad</span>
-                        <p>24</p>
+                        <p>{calcularEdad(usuarioInfo?.fecha_nac)}</p>
                     </div>
 
                     <div class="info-item">
@@ -69,7 +98,7 @@ function Perfil(){
 
                     <div class="buttons">
                         <button class="edit" onClick={() => navigate("/EditarPerfil")}>Editar Perfil</button>
-                        <a href="/login" class="logout">Cerrar Sesión</a>
+                        <button class="logout" onClick={logOut}>Cerrar Sesión</button>
                     </div>
 
                 </div>
