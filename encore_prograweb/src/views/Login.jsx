@@ -53,7 +53,7 @@ function Login(){
         });
 
         if(res?.success){
-            localStorage.setItem("usuario", JSON.stringify(res.data));
+            // localStorage.setItem("usuario", JSON.stringify(res.data));
             navigate("/");
         }else{
             setMensajeVisible(res?.message);

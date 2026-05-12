@@ -11,6 +11,8 @@
 // <body>
 import { useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
+import { verificarSesion } from '../../../services/usuariosService';
+import { logoutUsuario } from '../../../services/usuariosService';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sPerfil.css'
 
@@ -19,13 +21,27 @@ function Perfil(){
     const [usuarioInfo, setUsuarioInfo] = useState("");
 
     useEffect(() => {
-        const usuario = JSON.parse(localStorage.getItem("usuario"));
 
-        if(!usuario){
-            navigate("/login", {state: {mensaje: "Debe iniciar sesión primero."}});
-        }else{
-            setUsuarioInfo(usuario);
-        }
+        const revisarSesion = async () => {
+
+            const res = await verificarSesion();
+
+            if(!res?.success){
+
+                navigate("/login", {
+                    state: {
+                        mensaje: "Debe iniciar sesión primero."
+                    }
+                });
+
+            }else{
+                setUsuarioInfo(res.user);
+            }
+
+        };
+
+        revisarSesion();
+
     }, []);
 
     const calcularEdad = (fecha) => {
@@ -41,8 +57,8 @@ function Perfil(){
         return edad;
     };
 
-    const logOut = () => {
-        localStorage.removeItem("usuario");
+    const logOut = async () => {
+        await logoutUsuario();
         navigate("/login");
     };
 

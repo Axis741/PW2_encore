@@ -9,11 +9,33 @@
 //     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 // </head>
 // <body>
+import { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sHome.css'
 
-
 function Home() {
+    const [mensajeVisible, setMensajeVisible] = useState("");
+    
+        const navigate = useNavigate();
+        const location = useLocation();
+        
+        const mensaje = location.state?.mensaje;
+    
+        useEffect(() => {
+            if(mensaje){
+                setMensajeVisible(mensaje);
+            }
+        },[mensaje]);
+    
+        useEffect(() => {
+            if(mensajeVisible){
+                const timer = setTimeout(() => {
+                    setMensajeVisible("");
+                }, 2000);
+                return () => clearTimeout(timer);
+            }
+        },[mensajeVisible]);
     return(
         <>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
@@ -35,7 +57,6 @@ function Home() {
             <a href="/carrito"><i className="fa-solid fa-cart-shopping"></i></a>
         </div>
     </header>
-
     
     <section className="search-section">
         <div className="search-box">
@@ -43,6 +64,8 @@ function Home() {
             <i className="fa-solid fa-magnifying-glass"></i>
         </div>
     </section>
+
+    {mensajeVisible && <p className='mensajeNotify'>{mensajeVisible}</p>}
 
     <main className="products">
 

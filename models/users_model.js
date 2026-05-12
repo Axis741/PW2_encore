@@ -20,6 +20,10 @@ const usuariosSchema = new mongoose.Schema({
   imagen: {
     type: String,
     required: [true, "Favor de seleccionar una foto de perfil"]
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 });
 

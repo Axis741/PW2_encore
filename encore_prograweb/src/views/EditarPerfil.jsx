@@ -10,7 +10,7 @@
 // </head>
 // <body>
 
-import { useState} from 'react';
+import { useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sEditarPerfil.css'
@@ -19,6 +19,18 @@ function EditarPerfil(){
 
     const [preview, setPreview] = useState("");
     const navigate = useNavigate();
+
+    const [usuarioInfo, setUsuarioInfo] = useState("");
+
+    useEffect(() => {
+        const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+        if(!usuario){
+            navigate("/login", {state: {mensaje: "Debe iniciar sesión primero."}});
+        }else{
+            setUsuarioInfo(usuario);
+        }
+    }, []);
     
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -67,12 +79,12 @@ function EditarPerfil(){
 
                     <div class="info-item">
                         <span>Usuario</span>
-                        <input type='text' value={"AnaLovesMusic"}></input>
+                        <input type='text' value={usuarioInfo?.usuario} onChange={(e) => setUsuarioInfo({...usuarioInfo, usuario: e.target.value})}></input>
                     </div>
 
                     <div class="info-item">
-                        <span>Edad</span>
-                        <input type='number' value={"24"}></input>
+                        <span>Fecha de Nacimiento</span>
+                        <input type='date' value={usuarioInfo.fecha_nac?.split("T")[0]} onChange={(e) => setUsuarioInfo({...usuarioInfo, fecha_nac: e.target.value})}></input>
                     </div>
 
                     <div class="info-item">
@@ -81,7 +93,8 @@ function EditarPerfil(){
                     </div>
 
                     <div class="buttons">
-                        <button class="edit" onClick={() => navigate("/perfil")}>Guardar cambios</button>
+                        <button className="edit">Guardar cambios</button>
+                        <button className="btnRegresar" onClick={() => navigate("/perfil")}>Regresar</button>
                     </div>
 
                 </div>

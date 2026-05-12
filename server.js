@@ -9,10 +9,14 @@ const mongoose = require('mongoose');
 const uri = 'mongodb://localhost:27017/Encore_Merch';
 
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 app.use(cors({
-  origin: 'http://localhost:5173'
+  origin: 'http://localhost:5173',
+  credentials: true
 }));
+
+app.use(cookieParser());
 
 app.use(bodyParser.json());
 app.use('/api/users', usersRoute);

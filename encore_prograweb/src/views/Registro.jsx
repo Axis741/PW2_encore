@@ -25,8 +25,20 @@ function Registro(){
     const [password, setPassword] = useState("");
     const [imagen, setImagen] = useState(null);
 
+    const [mensajeVisible, setMensajeVisible] = useState("");
+    const [campoError, setCampoError] = useState("");
+
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if(mensajeVisible){
+            const timer = setTimeout(() => {
+                setMensajeVisible("");
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    },[mensajeVisible]);
 
     const handleGuardar = async (e) => {
         e.preventDefault();
@@ -41,18 +53,28 @@ function Registro(){
         const res = await crearUsuarios(nuevoUsuario);
         console.log(res);
 
-        setNombre("");
-        setFechaNac("");
-        setUsuario("");
-        setPassword("");
-        setPreview("");
-        setImagen(null);
+        if(res?.success){
+            setNombre("");
+            setFechaNac("");
+            setUsuario("");
+            setPassword("");
+            setPreview("");
+            setImagen(null);
 
-        if (fileInputRef.current) {
-            fileInputRef.current.value = "";
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
+
+            navigate("/login");
+        }else{
+            setMensajeVisible(res?.message);
+
+            if(res?.message === "El usuario ya existe"){
+                setCampoError("usuario");
+            }else if(res?.message === "La contraseña debe tener minimo 8 caracteres, una mayúscula, un número y un carácter especial"){
+                setCampoError("contrasena");
+            }
         }
-
-        navigate("/login");
     };
 
     //PREVIEW IMAGEN DE PERFIL
@@ -81,6 +103,9 @@ function Registro(){
                 <a href="/artistas">ARTISTAS/BANDAS</a>
             </nav>
         </header>
+
+        {mensajeVisible && <p className='mensajeNotify'>{mensajeVisible}</p>}
+
         <div class="register-container">
             <div class="register-card">
                 <h1>Crear Cuenta</h1>
@@ -98,12 +123,12 @@ function Registro(){
 
                     <div class="input-group">
                         <i class="fa-solid fa-circle-user"></i>
-                        <input type="text" placeholder="Usuario" value={usuario} onChange={(e) => setUsuario(e.target.value)} required/>
+                        <input type="text" placeholder="Usuario" value={usuario} onChange={(e) => { setUsuario(e.target.value); setCampoError(""); }} className={campoError === "usuario" ? "inputError": ""} required/>
                     </div>
 
                     <div class="input-group">
                         <i class="fa-solid fa-lock"></i>
-                        <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required/>
+                        <input type="password" placeholder="Contraseña" value={password} onChange={(e) => {setPassword(e.target.value); setCampoError("");}} className={campoError === "contrasena" ? "inputError": ""} required/>
                     </div>
 
                     <div className="input-group">

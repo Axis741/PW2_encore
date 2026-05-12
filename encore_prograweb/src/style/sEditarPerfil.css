@@ -149,7 +149,7 @@ button{
     background:#693bb5;
 }
 
-.logout{
+.btnRegresar{
     background:#333;
     color:white;
     text-decoration: none;
@@ -162,7 +162,7 @@ button{
     padding:12px 25px;
 }
 
-.logout:hover{
+.btnRegresar:hover{
     background:#444;
 }
 

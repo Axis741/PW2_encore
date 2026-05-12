@@ -160,7 +160,7 @@ nav a{
 .mensajeNotify{
     position: fixed;
     top: 85px;
-    left: 50;
+    left: 40%;
     background: linear-gradient(135deg, #7c51c2, #512da8);
     color: white;
     padding: 12px 20px;

@@ -12,6 +12,7 @@
 // <body>
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { verificarSesion } from '../../../services/usuariosService';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sAdmin.css'
 
@@ -21,11 +22,35 @@ function Admin(){
     const navigate = useNavigate();
 
     useEffect(() => {
-        const usuario = JSON.parse(localStorage.getItem("usuario"));
 
-        if(!usuario){
-            navigate("/login", {state: {mensaje: "Debe iniciar sesión primero."}});
-        }
+        const revisarSesion = async () => {
+
+            const res = await verificarSesion();
+
+            if(!res?.success){
+
+                navigate("/login", {
+                    state: {
+                        mensaje: "Debe iniciar sesión primero."
+                    }
+                });
+
+            }else if(!res.user.isAdmin){
+                navigate("/", {
+                    state: {
+                        mensaje: "No tiene acceso a esta sección."
+                    }
+                });
+            }else{
+                setUsuarioInfo(res.user);
+
+            }
+
+
+        };
+
+        revisarSesion();
+
     }, []);
 
     const handleImageChange = (e) => {

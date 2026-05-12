@@ -26,6 +26,35 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({storage});
+//VALIDAR TIPO DE ARCHIVO
+const fileFilter = (req, file, cb) => {
+
+    const tiposPermitidos = /jpeg|jpg|png|webp/;
+
+    const extname = tiposPermitidos.test(
+        path.extname(file.originalname).toLowerCase()
+    );
+
+    const mimetype = tiposPermitidos.test(file.mimetype);
+
+    if(extname && mimetype){
+
+        return cb(null, true);
+
+    }else{
+
+        cb(new Error("Solo se permiten imágenes JPG, PNG o WEBP"));
+
+    }
+
+};
+
+const upload = multer({
+    storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024
+    },
+    fileFilter
+});
 
 module.exports = upload;

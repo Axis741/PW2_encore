@@ -23,6 +23,7 @@ export const loginUsuarios = async (usuarioData) => {
       headers: {
         'Content-Type': 'application/json'
       },
+      credentials: 'include',
       body: JSON.stringify(usuarioData)
     });
 
@@ -30,4 +31,42 @@ export const loginUsuarios = async (usuarioData) => {
   }catch(error){
     console.error('Error en login:', error);
   }
+};
+
+//VERIFICAR SESION
+export const verificarSesion = async () => {
+  try{
+    const res = await fetch(
+      'http://localhost:8080/api/users/session',
+      {
+        method: 'GET',
+        credentials: 'include'
+      }
+    );
+
+    return await res.json();
+  }catch(error){
+    console.error('Error al verificar sesion:', error);
+  }
+};
+
+//LOGOUT
+export const logoutUsuario = async () => {
+
+  try{
+
+    const res = await fetch(
+      'http://localhost:8080/api/users/logout',
+      {
+        method: 'POST',
+        credentials: 'include'
+      }
+    );
+
+    return await res.json();
+
+  }catch(error){
+    console.error(error);
+  }
+
 };
