@@ -232,6 +232,23 @@ nav a:hover{
     transform:scale(1.05);
 }
 
+.mensajeNotify{
+    position: fixed;
+    top: 85px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #7c51c2, #512da8);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 20px;
+    font-weight: 500;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    z-index: 4;
+    max-width: 500px;
+    width: fit-content;
+    text-align: center;
+}
+
 @media (max-width: 900px){
     header{
         gap: 5px;

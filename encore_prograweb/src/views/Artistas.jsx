@@ -10,7 +10,9 @@
 // </head>
 // <body>
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom';
+import { verificarSesion } from '../../../services/usuariosService';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sArtistas.css'
 import { crearArtista, getArtistas } from '../../../services/artistasService';
@@ -24,6 +26,20 @@ function Artistas(){
 
     const [artistas, setArtistas] = useState([]);
 
+    const [mensajeVisible, setMensajeVisible] = useState("");
+    const fileInputRef = useRef(null);
+
+    const navigate = useNavigate();
+    
+    useEffect(() => {
+        if(mensajeVisible){
+            const timer = setTimeout(() => {
+                setMensajeVisible("");
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    },[mensajeVisible]);
+
     useEffect(() => {
         const fetchArtistas = async () => {
             const res = await getArtistas();
@@ -32,6 +48,29 @@ function Artistas(){
 
         fetchArtistas();
     }, []);
+
+    const verificarAdmin = () => {
+        const revisarSesion = async () => {
+            const res = await verificarSesion();
+
+            if(!res?.success){
+                navigate("/login", {
+                    state: {
+                        mensaje: "Debe iniciar sesión primero."
+                    }
+                });
+            }else{
+                //setUsuarioInfo(res.user);
+                if(res.user.isAdmin){
+                    setShowModal(true);
+                }else{
+                    setMensajeVisible("No tiene permiso para acceder a esta sección");
+                }
+            }
+        };
+
+        revisarSesion();
+    }
 
     const handleGuardar = async (e) => {
         e.preventDefault();
@@ -47,19 +86,29 @@ function Artistas(){
         const res = await crearArtista(nuevoArtista);
         console.log(res);
 
-        setArtistas(prev => [...prev, res.data]);
+        if(res?.success){
+            setArtistas(prev => [...prev, res.data]);
 
-        setNombre("");
-        setPreview("");
-        setImagen(null);
+            setNombre("");
+            setPreview("");
+            setImagen(null);
 
-        setShowModal(false);
+            setShowModal(false);
+
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
+        }else{
+            setMensajeVisible(res?.message);
+        }
+        
     }
 
     const [preview, setPreview] = useState("");
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
+        console.log(file.size);
         if(file){
             setPreview(URL.createObjectURL(file));
             setImagen(file);
@@ -87,6 +136,8 @@ function Artistas(){
             </div>
         </header>
 
+        {mensajeVisible && <p className='mensajeNotify'>{mensajeVisible}</p>}
+
         <section className="search-section">
             <div className="search-box">
                 <input type="text" placeholder="Buscar..."/>
@@ -106,7 +157,7 @@ function Artistas(){
             ))}
         </main>
 
-        <button className="btn_Add" onClick={() => setShowModal(true)}>+</button>
+        <button className="btn_Add" onClick={verificarAdmin}>+</button>
 
         {showModal && (
             <div className="modal-overlay">
@@ -125,7 +176,7 @@ function Artistas(){
 
                         <div className="input-group">
                             <label>Imagen</label>
-                            <input type="file" name="imagen" accept="image/*" onChange={handleImageChange} required />
+                            <input type="file" name="imagen" accept="image/*" onChange={handleImageChange} ref={fileInputRef} required />
                         </div>
 
                         <div className="image-preview">

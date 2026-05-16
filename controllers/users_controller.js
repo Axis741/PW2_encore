@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
+const { error } = require('console');
 
 const borrarImagen = (file) => {
 
@@ -163,6 +164,116 @@ exports.verificarSesion = async (req,res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
+//actualizar usuarios
+exports.updateUser = async (req, res) => {
+  try{
+    const {id} = req.params;
+
+    const {nombre, usuario, fecha_nac, contrasena} = req.body;
+
+    const usuarioActual = await usersModel.findById(id);
+
+    if(!usuarioActual){
+      borrarImagen(req.file);
+
+      return res.status(400).json({
+        success: false,
+        message: "Usuario no encontrado"
+      });
+    }
+
+    if(usuario !== usuarioActual.usuario){
+      const usuarioExiste = await usersModel.findOne({usuario});
+
+      if(usuarioExiste){
+        borrarImagen(req.file);
+
+        return res.status(400).json({
+          success: false,
+          message: "El usuario ya existe"
+        });
+      }
+    }
+
+    const datosActualizados = {nombre, usuario, fecha_nac};
+
+    if(contrasena && contrasena.trim() !== ""){
+      const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/;
+
+      if(!regexPassword.test(contrasena)){
+        borrarImagen(req.file);
+
+        return res.status(400).json({
+          success: false,
+          message: "La contraseña debe tener minimo 8 caracteres, una mayúscula, un número y un carácter especial"
+        });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+
+      datosActualizados.contrasena = await bcrypt.hash(contrasena, salt);
+    }
+
+    if(req.file){
+      if(usuarioActual.imagen){
+        const rutaVieja = path.join(
+          __dirname,
+          "../uploads",
+          usuarioActual.imagen
+        );
+
+        fs.unlink(rutaVieja, (err) => {
+          if(err){
+            console.log(err);
+          }
+        });
+      }
+      datosActualizados.imagen = req.file.filename;
+    }
+
+    const usuarioActualizado = await usersModel.findByIdAndUpdate(
+      id,
+      datosActualizados,
+      {new: true}
+    );
+
+    //Actulizar las cookies
+    const token = jwt.sign({
+      id: usuarioActualizado._id,
+      nombre: usuarioActualizado.nombre,
+      usuario: usuarioActualizado.usuario,
+      fecha_nac: usuarioActualizado.fecha_nac,
+      imagen: usuarioActualizado.imagen,
+      isAdmin: usuarioActualizado.isAdmin
+    },
+    "mi_secreto_super_seguro",
+    {
+      expiresIn: "1d"
+    });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 24
+    });
+
+    res.status(200).json({
+      success: true,
+      data: usuarioActualizado
+    });
+
+  }catch(err){
+    borrarImagen(req.file);
+    console.error(err);
+
+    res.status(400).json({
+      success: false,
+      message: err.message
+    });
+  }
+}
 
 //logout
 exports.logoutUser = async (req,res) => {

@@ -50,6 +50,24 @@ export const verificarSesion = async () => {
   }
 };
 
+//ACTUALIZAR USUARIO
+export const updateUsuario = async (id, formData) => {
+  try{
+    const res = await fetch(
+      `http://localhost:8080/api/users/${id}`,
+      {
+        method: "PUT",
+        credentials: "include",
+        body: formData
+      }
+    );
+
+    return await res.json();
+  }catch(error){
+    console.error('Error al actualizar usuario:', error);
+  }
+};
+
 //LOGOUT
 export const logoutUsuario = async () => {
 

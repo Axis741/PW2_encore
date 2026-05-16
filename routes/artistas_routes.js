@@ -10,6 +10,7 @@ const {
   updateArtista,
   deleteArtista
 } = require('../controllers/artistas_controller');
+const multer = require('multer');
 
 
 // Middleware de prueba
@@ -22,7 +23,27 @@ router.use((req, res, next) => {
 // GET ALL + CREATE
 router.route('/')
   .get(getArtistas)       // Obtener todos los artistas
-  .post(upload.single("imagen"),createArtista);   // Crear artista
+  // .post(upload.single("imagen"),createArtista);   // Crear artista
+  .post((req, res) => {
+    upload.single("imagen")(req, res, function(err){
+
+      if(err instanceof multer.MulterError){
+        if(err.code === "LIMIT_FILE_SIZE"){
+          return res.status(400).json({
+            success: false,
+            message: "La imagen es demasiado pesada. Máximo 5MB"
+          });
+        }
+      }else if(err){
+        return res.status(400).json({
+          success:  false,
+          message: err.message
+        });
+      }
+
+      createArtista(req, res);
+    });
+  });
 
 
 // PRODUCTOS DE UN ARTISTA
