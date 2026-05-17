@@ -11,7 +11,8 @@ export const crearEvento = async (formData) => {
             }
         );
 
-        return await res.json();
+        const data = await res.json();
+        return data;
 
     }catch(error){
         console.error(error);
@@ -28,7 +29,8 @@ export const getEventos = async () => {
             "http://localhost:8080/api/eventos"
         );
 
-        return await res.json();
+        const data = await res.json();
+        return data;
 
     }catch(error){
         console.error(error);

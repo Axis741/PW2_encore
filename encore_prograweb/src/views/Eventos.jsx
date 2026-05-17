@@ -2,12 +2,18 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getArtistas } from '../../../services/artistasService';
 import { verificarSesion } from '../../../services/usuariosService';
+import { crearEvento, getEventos } from '../../../services/eventosService';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sEventos.css'
 
 function Eventos(){
     const [artistas, setArtistas] = useState([]);
     const [idArtista, setIdArtista] = useState("");
+    const [tour, setTour] = useState("");
+    const [presentaciones, setPresentaciones] = useState("");
+    const [imagen, setImagen] = useState(null);
+
+    const [eventos, setEventos] = useState([]);
 
     const navigate = useNavigate();
 
@@ -60,6 +66,51 @@ function Eventos(){
         revisarSesion();
     }
 
+    //guardar eventos
+    const cargarEventos = async () => {
+        const res = await getEventos();
+
+        if(res?.success){
+            setEventos(res.data);
+        }
+    };
+
+    useEffect(() => {
+        cargarEventos();
+    }, []);
+
+    const handleGuardarEvento = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append("id_artista", idArtista);
+        formData.append("tour", tour);
+        formData.append("presentaciones", presentaciones);
+        formData.append("imagen", imagen);
+
+        const res = await crearEvento(formData);
+
+        if(res?.success){
+            setMensajeVisible("Evento aregado correctamente");
+            setShowModal(false);
+
+            setTour("");
+            setPresentaciones("");
+            setImagen(null);
+            setPreview("");
+
+            if(fileInputRef.current){
+                fileInputRef.current.value = "";
+            }
+
+            cargarEventos();
+        }else{
+            setMensajeVisible(res?.message);
+        }
+    }
+
+    //preview imagen
     const [preview, setPreview] = useState("");
 
     const handleImageChange = (e) => {
@@ -67,7 +118,7 @@ function Eventos(){
         console.log(file.size);
         if(file){
             setPreview(URL.createObjectURL(file));
-            //setImagen(file);
+            setImagen(file);
         }
     };
 
@@ -99,7 +150,7 @@ function Eventos(){
 
         {mensajeVisible && <p className='mensajeNotify'>{mensajeVisible}</p>}
 
-        <section className="events-container">
+        {/* <section className="events-container">
             <div className={`event-card coldplay ${activeCard === 0 ? 'active':''}`} style={{ backgroundImage: "url('https://i.scdn.co/image/ab6761610000e5eb1ba8fc5f5c73e7e9313cc6eb')" }} onClick={() => toggleCard(0)}>
                 <div className="event-info">
                     <h3>COLDPLAY</h3>
@@ -136,6 +187,40 @@ function Eventos(){
                 </div>
             </div>
 
+        </section> */}
+
+        <section className="events-container">
+
+            {eventos.map((evento, index) => (
+                <div
+                    key={evento._id}
+                    className={`event-card ${activeCard === index ? 'active' : ''}`}
+                    style={{
+                        backgroundImage: `url(http://localhost:8080/uploads/${evento.imagen})`
+                    }}
+                    onClick={() => toggleCard(index)}
+                >
+                    <div className="event-info">
+                        <h3>{evento.id_artista?.nombre}</h3>
+                        <h1>{evento.tour}</h1>
+                        <p>Haz click para ver fechas</p>
+                    </div>
+
+                    <div className="event-dates">
+                        <h2>Fechas del Tour</h2>
+
+                        <ul>
+                            {evento.presentaciones
+                                .split("\n")
+                                .map((fecha, i) => (
+                                    <li key={i}>{fecha}</li>
+                            ))}
+                        </ul>
+
+                    </div>
+                </div>
+            ))}
+
         </section>
 
         <button className="btn_Add" onClick={verificarAdmin}>+</button>
@@ -149,7 +234,7 @@ function Eventos(){
 
                     <h1>Agregar Evento</h1>
 
-                    <form>
+                    <form onSubmit={handleGuardarEvento}>
                         <div className="input-group">
                             <label>Artista / Banda</label>
                             <select
@@ -173,12 +258,12 @@ function Eventos(){
 
                         <div className="input-group">
                             <label>Nombre del Tour</label>
-                            <input type="text" placeholder="Ej. Coldplay World Tour" required />
+                            <input type="text" placeholder="Ej. Coldplay World Tour" value={tour} onChange={(e) => setTour(e.target.value)} required />
                         </div>
 
                         <div className="input-group">
                             <label>Fechas</label>
-                            <textarea placeholder='MX Monterrey - 15 de Junio 2026' required/>
+                            <textarea placeholder='MX Monterrey - 15 de Junio 2026' value={presentaciones} onChange={(e) => setPresentaciones(e.target.value)} required/>
                         </div>
 
                         <div className="input-group">

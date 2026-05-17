@@ -3,7 +3,7 @@ const router = express.Router();
 const upload = require("../middlewares/upload");
 const multer = require('multer');
 
-const { getEventos, createEventos} = require("../controllers/eventos_controller");
+const { getEventos, createEvento} = require("../controllers/eventos_controller");
 
 router.route('/')
     .get(getEventos)

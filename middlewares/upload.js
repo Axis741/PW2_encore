@@ -20,6 +20,11 @@ const storage = multer.diskStorage({
                 .toLowerCase()
                 .replace(/\s+/g, "_")
                 .replace(/[^a-z0-9_]/g, "");
+        }else if(req.body.tour){
+            base = req.body.tour
+                .toLowerCase()
+                .replace(/\s+/g, "_")
+                .replace(/[^a-z0-9_]/g, "");
         }
 
         cb(null, base + "_" + Date.now() + ext);

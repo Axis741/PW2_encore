@@ -34,7 +34,7 @@ exports.createEvento = async (req,res) => {
         });
         
     } catch (error) {
-        onsole.error(error);
+        console.error(error);
         res.status(400).json({ success: false, message: error.message });
     }
 };
