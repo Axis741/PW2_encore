@@ -1,10 +1,6 @@
 const artistaModel = require('../models/artista_model');
 const productosModel = require('../models/productos_model');
 
-
-// @desc    Get all artists
-// @route   GET /api/v1/artistas
-// @access  Public
 exports.getArtistas = async (req, res) => {
   try {
     const artistas = await artistaModel.find();
@@ -20,10 +16,6 @@ exports.getArtistas = async (req, res) => {
   }
 };
 
-
-// @desc    Get single artist
-// @route   GET /api/v1/artistas/:id
-// @access  Public
 exports.getArtistaById = async (req, res) => {
   try {
     const artista = await artistaModel.findById(req.params.id);
@@ -45,10 +37,6 @@ exports.getArtistaById = async (req, res) => {
   }
 };
 
-
-// @desc    Get products by artist
-// @route   GET /api/v1/artistas/:id/productos
-// @access  Public
 exports.getProductosByArtista = async (req, res) => {
   try {
     const artista = await artistaModel.findById(req.params.id);

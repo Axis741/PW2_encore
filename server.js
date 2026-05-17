@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const usersRoute = require('./routes/users_routes');
 const artistasRoute = require('./routes/artistas_routes');
+const eventosRoute = require('./routes/eventos_routes');
 const ordenesRoute = require('./routes/ordenes_routes');
 const reportesRoute = require('./routes/reportes_routes');
 const bodyParser = require('body-parser');
@@ -21,6 +22,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use('/api/users', usersRoute);
 app.use('/api/artistas', artistasRoute);
+app.use('api/eventos', eventosRoute);
 app.use('/api/ordenes', ordenesRoute);
 app.use('/api/reportes', reportesRoute);
 

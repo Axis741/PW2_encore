@@ -31,7 +31,7 @@ router.route('/')
         if(err.code === "LIMIT_FILE_SIZE"){
           return res.status(400).json({
             success: false,
-            message: "La imagen es demasiado pesada. Máximo 5MB"
+            message: "La imagen es demasiado pesada. Máximo 1MB"
           });
         }
       }else if(err){

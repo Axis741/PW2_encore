@@ -14,7 +14,6 @@ const eventoSchema = new mongoose.Schema({
 
   presentaciones: {
     type: String, 
-    // Puedes cambiar esto a Array si luego quieres múltiples fechas/lugares
     required: [true, "Favor de ingresar las presentaciones"]
   },
 
