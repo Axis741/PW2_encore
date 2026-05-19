@@ -1,9 +1,32 @@
 const artistaModel = require('../models/artista_model');
 const productosModel = require('../models/productos_model');
+const fs = require("fs");
+const path = require("path");
+const { error } = require('console');
+
+const borrarImagen = (file) => {
+
+  if(file){
+
+    const rutaImagen = path.join(
+      __dirname,
+      "../uploads",
+      file.filename
+    );
+
+    fs.unlink(rutaImagen, (err) => {
+      if(err){
+        console.error("Error al borrar imagen:", err);
+      }
+    });
+
+  }
+
+};
 
 exports.getArtistas = async (req, res) => {
   try {
-    const artistas = await artistaModel.find();
+    const artistas = await artistaModel.find({estado: {$ne: "eliminado"}});
 
     res.status(200).json({
       success: true,
@@ -87,46 +110,84 @@ exports.createArtista = async (req, res) => {
 
 exports.updateArtista = async (req, res) => {
   try {
-    const artista = await artistaModel.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const {id} = req.params;
 
-    if (!artista) {
-      return res.status(404).json({
+    const artistaActual = await artistaModel.findById(id);
+
+    if(!artistaActual){
+      borrarImagen(req.file);
+
+      return res.status(400).json({
         success: false,
-        message: 'Artista no encontrado'
+        message: "Artista no encontrado"
       });
     }
 
+    const datosArtistaActualizados = {
+      nombre: req.body.nombre
+    };
+
+    if(req.file){
+      if(artistaActual.foto){
+        const rutaVieja = path.join(
+          __dirname,
+          "../uploads",
+          artistaActual.foto
+        );
+
+        fs.unlink(rutaVieja, (err) => {
+          if(err){
+            console.log(err);
+          }
+        });
+      }
+      datosArtistaActualizados.foto = req.file.filename;
+    }
+
+    const artistaActualizado = await artistaModel.findByIdAndUpdate(
+      id,
+      datosArtistaActualizados,
+      {new: true}
+    );
+
     res.status(200).json({
       success: true,
-      data: artista
+      data: artistaActualizado
     });
 
   } catch (error) {
+    borrarImagen(req.file);
+    console.error(error);
     res.status(400).json({ success: false, message: error.message });
   }
 };
 
 exports.deleteArtista = async (req, res) => {
   try {
-    const artista = await artistaModel.findByIdAndDelete(req.params.id);
+    const {id} = req.params;
 
-    if (!artista) {
-      return res.status(404).json({
+    const artistaEliminado = await artistaModel.findByIdAndUpdate(
+      id,
+      {
+        estado: "eliminado"
+      },
+      {new: true}
+    );
+
+    if(!artistaEliminado){
+      return res.status(400).json({
         success: false,
-        message: 'Artista no encontrado'
+        message: "Artista no encontrado"
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: 'Artista eliminado correctamente'
+      message: "Artista eliminado"
     });
 
   } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

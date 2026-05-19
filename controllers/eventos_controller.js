@@ -113,11 +113,11 @@ exports.updateEvento = async (req,res) => {
 
     } catch (error) {
         borrarImagen(req.file);
-        console.error(err);
+        console.error(error);
     
         res.status(400).json({
             success: false,
-            message: err.message
+            message: error.message
         });
     }
 };
@@ -146,11 +146,11 @@ exports.deleteEvento = async (req,res) => {
             message: "Evento eliminado"
         });
     } catch (error) {
-        console.error(err);
+        console.error(error);
     
         res.status(400).json({
             success: false,
-            message: err.message
+            message: error.message
         });
     }
 };

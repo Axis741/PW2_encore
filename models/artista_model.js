@@ -5,7 +5,12 @@ const artistaSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  foto: String
+  foto: String,
+  estado: {
+    type: String,
+    enum: ["activo", "eliminado"],
+    default: "activo"
+  }
 });
 
 module.exports = mongoose.model("Artista", artistaSchema);

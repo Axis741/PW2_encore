@@ -15,11 +15,9 @@ import { useNavigate } from 'react-router-dom';
 import { verificarSesion } from '../../../services/usuariosService';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sArtistas.css'
-import { crearArtista, getArtistas } from '../../../services/artistasService';
+import { crearArtista, deleteArtista, getArtistas, updateArtista } from '../../../services/artistasService';
 
 function Artistas(){
-
-    const [showModal, setShowModal] = useState(false);
 
     const [nombre, setNombre] = useState("");
     const [imagen, setImagen] = useState(null);
@@ -40,45 +38,83 @@ function Artistas(){
         }
     },[mensajeVisible]);
 
-    useEffect(() => {
-        const fetchArtistas = async () => {
-            const res = await getArtistas();
+    const fetchArtistas = async () => {
+        const res = await getArtistas();
+        if(res?.success){
             setArtistas(res.data);
-        };
+        }
+    };
 
+    useEffect(() => {
         fetchArtistas();
     }, []);
 
-    const verificarAdmin = () => {
-        const revisarSesion = async () => {
-            const res = await verificarSesion();
+    //mostrar modal de opciones Admin
+    const [showAdminOptions, setShowAdminOptions] = useState(false);
 
-            if(!res?.success){
-                navigate("/login", {
-                    state: {
-                        mensaje: "Debe iniciar sesión primero."
-                    }
-                });
-            }else{
-                //setUsuarioInfo(res.user);
-                if(res.user.isAdmin){
-                    setShowModal(true);
-                }else{
-                    setMensajeVisible("No tiene permiso para acceder a esta sección");
+    const toggleAdminOptions = async () => {
+        const res = await verificarSesion();
+
+        if(!res?.success){
+            navigate("/login", {
+                state: {
+                    mensaje: "Debe iniciar sesión primero."
                 }
-            }
-        };
+            });
 
-        revisarSesion();
-    }
+            return;
+        }
+
+        if(!res.user.isAdmin){
+            setMensajeVisible("No tiene permiso para acceder");
+            return;
+        }
+
+        setShowAdminOptions(!showAdminOptions);
+    };
+
+    //declaracion de modals de agregar, actualizar y eliminar
+    const [showModal, setShowModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    const [artistaSeleccionado, setArtistaSeleccionado] = useState("");
+
+    const handleSeleccionarArtista = (idArtista) => {
+        setArtistaSeleccionado(idArtista);
+
+        const artista = artistas.find(
+            (e) => e._id === idArtista
+        );
+
+        if(artista){
+            setNombre(artista.nombre);
+            setPreview(`http://localhost:8080/uploads/${artista.foto}`);
+        }
+    };
+
+     //limpiar datos
+    const limpiarDatos = () => {
+
+        if(fileInputRef.current){
+            fileInputRef.current.value = "";
+        }
+
+        setPreview("");
+        setArtistaSeleccionado("");
+        //setIdArtista("");
+        setNombre("");
+        setImagen(null);
+
+        setShowModal(false);
+        setShowEditModal(false);
+        setShowDeleteModal(false);
+
+    };
 
     const handleGuardar = async (e) => {
         e.preventDefault();
 
-        // const nuevoArtista = {
-        //     nombre: nombre,
-        //     imagen: preview
-        // };
         const nuevoArtista = new FormData();
         nuevoArtista.append("nombre", nombre);
         nuevoArtista.append("imagen", imagen);
@@ -87,22 +123,62 @@ function Artistas(){
         console.log(res);
 
         if(res?.success){
+            setMensajeVisible("Artista agregado correctamente");
             setArtistas(prev => [...prev, res.data]);
 
-            setNombre("");
-            setPreview("");
-            setImagen(null);
+            limpiarDatos();
 
-            setShowModal(false);
-
-            if (fileInputRef.current) {
-                fileInputRef.current.value = "";
-            }
+            fetchArtistas();
         }else{
             setMensajeVisible(res?.message);
         }
         
     }
+
+    const handleActualizarArtista = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append("nombre", nombre);
+
+        if(imagen){
+            formData.append("imagen", imagen);
+        }
+
+        const res = await updateArtista(artistaSeleccionado, formData);
+
+        if(res?.success){
+            setShowEditModal(false);
+
+            limpiarDatos();
+
+            setMensajeVisible("Artista Actualizado correctamente");
+
+
+            fetchArtistas();
+        }else{
+            setMensajeVisible(res?.message);
+        }
+    };
+
+    const handleEliminarArtista = async (e) => {
+        e.preventDefault();
+
+        const res = await deleteArtista(artistaSeleccionado);
+
+        if(res?.success){
+            setShowDeleteModal(false);
+
+            limpiarDatos();
+
+            setMensajeVisible("Artista eliminado correctamente");
+
+            fetchArtistas();
+        }else{
+            setMensajeVisible(res?.message);
+        }
+    };
 
     const [preview, setPreview] = useState("");
 
@@ -157,12 +233,38 @@ function Artistas(){
             ))}
         </main>
 
-        <button className="btn_Add" onClick={verificarAdmin}>+</button>
+        {/* <button className="btn_Add" onClick={verificarAdmin}>+</button> */}
+
+        <div className='adminContainer'>
+            <button className="btn_Add" onClick={toggleAdminOptions}><i class="fa-solid fa-gear"></i></button>
+
+            {showAdminOptions && (
+
+                <div className="adminOptions">
+
+                    <button className="adminOptionBtn" onClick={() => { setShowModal(true); setShowAdminOptions(false); }}>
+                        <i className="fa-solid fa-plus"></i>Agregar Artista
+                    </button>
+
+                    <button className="adminOptionBtn" onClick={() => {setShowEditModal(true); setShowAdminOptions(false); }}>
+                        <i className="fa-solid fa-pen"></i>
+                        Actualizar Artista
+                    </button>
+
+                    <button className="adminOptionBtn delete" onClick={() => {setShowDeleteModal(true); setShowAdminOptions(false); }} >
+                        <i className="fa-solid fa-trash"></i>
+                        Eliminar Artista
+                    </button>
+
+                </div>
+            )}
+
+        </div>
 
         {showModal && (
             <div className="modal-overlay">
                 <div className="modal">
-                    <button className='btnClose' onClick={() => setShowModal(false)}>
+                    <button className='btnClose' onClick={limpiarDatos}>
                         <i className="fa-solid fa-xmark"></i>
                     </button>
 
@@ -184,6 +286,104 @@ function Artistas(){
                         </div>
 
                         <button type="submit" className="btn-save">Guardar Artista</button>
+                    </form>
+                </div>
+            </div>
+        )}
+
+        {showEditModal && (
+            <div className="modal-overlay">
+                <div className="modal">
+                    <button className='btnClose' onClick={limpiarDatos}>
+                        <i className="fa-solid fa-xmark"></i>
+                    </button>
+
+                    <h1>Editar Artista</h1>
+
+                    <form onSubmit={handleActualizarArtista}>
+                        <div className="input-group">
+                            <label>Seleccionar Artista</label>
+                            <select
+                                value={artistaSeleccionado}
+                                onChange={(e) =>
+                                    handleSeleccionarArtista(
+                                        e.target.value
+                                    )
+                                }
+                            >
+                                <option value="">
+                                    Selecciona un artista
+                                </option>
+                                {artistas.map((artista) => (
+
+                                    <option
+                                        key={artista._id}
+                                        value={artista._id}
+                                    >
+                                        {artista.nombre}
+                                    </option>
+
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="input-group">
+                            <label>Nombre</label>
+                            <input type="text" placeholder="Ej. Taylor Swift" value={nombre} onChange={(e) => setNombre(e.target.value)}/>
+                        </div>
+
+                        <div className="input-group">
+                            <label>Imagen</label>
+                            <input type="file" name="imagen" accept="image/*" onChange={handleImageChange} ref={fileInputRef}/>
+                        </div>
+
+                        <div className="image-preview">
+                            {preview && <img src={preview} alt='preview'></img>}
+                        </div>
+
+                        <button type="submit" className="btn-save">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+        )}
+
+        {showDeleteModal && (
+            <div className="modal-overlay">
+                <div className="modal">
+                    <button className='btnClose' onClick={limpiarDatos}>
+                        <i className="fa-solid fa-xmark"></i>
+                    </button>
+
+                    <h1>Eliminar Artista</h1>
+
+                    <form onSubmit={handleEliminarArtista}>
+                        <div className="input-group">
+                            <label>Seleccionar Artista</label>
+                            <select
+                                value={artistaSeleccionado}
+                                onChange={(e) =>
+                                    handleSeleccionarArtista(
+                                        e.target.value
+                                    )
+                                }
+                            >
+                                <option value="">
+                                    Selecciona un artista
+                                </option>
+                                {artistas.map((artista) => (
+
+                                    <option
+                                        key={artista._id}
+                                        value={artista._id}
+                                    >
+                                        {artista.nombre}
+                                    </option>
+
+                                ))}
+                            </select>
+                        </div>
+
+                        <button type="submit" className="btn-save">Eliminar Evento</button>
                     </form>
                 </div>
             </div>

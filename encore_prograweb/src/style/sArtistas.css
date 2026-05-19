@@ -125,7 +125,7 @@ nav a:hover{
     height: 60px;
     border-radius: 50%;
     border: none;
-    font-size: 30px;
+    font-size: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -139,6 +139,62 @@ nav a:hover{
 .btn_Add:hover{
     background: #a073e9;
     transform: scale(1.1);
+}
+
+.adminContainer{
+    position: fixed;
+    bottom: 120px;
+    right: 30px;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    gap: 12px;
+    z-index: 4;
+}
+
+.adminOptions{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    animation: fadeUp .2s ease;
+}
+
+.adminOptionBtn{
+    border: none;
+    background: #1e1e1e;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: .2s;
+}
+
+.adminOptionBtn:hover{
+    transform: translateY(-2px);
+    background: #2a2a2a;
+}
+
+.adminOptionBtn.delete:hover{
+    background: #7a1d1d;
+}
+
+@keyframes fadeUp{
+
+    from{
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to{
+        opacity: 1;
+        transform: translateY(0);
+    }
+
 }
 
 .modal-overlay{
@@ -247,6 +303,29 @@ nav a:hover{
     max-width: 500px;
     width: fit-content;
     text-align: center;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar{
+    width: 8px;
+}
+
+/* Fondo */
+::-webkit-scrollbar-track{
+    background: rgba(0,0,0,0.25);
+    border-radius: 10px;
+}
+
+/* Barra */
+::-webkit-scrollbar-thumb{
+    background: #d1c4ff;
+    border-radius: 10px;
+    border: 2px solid rgba(0,0,0,0.15);
+}
+
+/* Hover */
+::-webkit-scrollbar-thumb:hover{
+    background: #ffffff;
 }
 
 @media (max-width: 900px){

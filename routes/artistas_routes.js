@@ -53,9 +53,36 @@ router.route('/:id/productos')
 
 // GET BY ID + UPDATE + DELETE
 router.route('/:id')
-  .get(getArtistaById)    // Obtener artista por ID
-  .put(updateArtista)     // Actualizar artista
-  .delete(deleteArtista); // Eliminar artista
+  .put((req, res) => {
+
+    upload.single("imagen")(req, res, function(err){
+
+      if(err instanceof multer.MulterError){
+
+        if(err.code === "LIMIT_FILE_SIZE"){
+
+          return res.status(400).json({
+            success: false,
+            message: "La imagen es demasiado pesada. Máximo 1MB"
+          });
+
+        }
+
+      }else if(err){
+
+        return res.status(400).json({
+          success: false,
+          message: err.message
+        });
+
+      }
+
+      updateArtista(req, res);
+
+    });
+
+  })
+  .delete(deleteArtista);
 
 
 module.exports = router;
