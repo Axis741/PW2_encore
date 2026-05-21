@@ -61,12 +61,19 @@ function Home() {
         fetchArtistas();
     }, []);
 
+    useEffect(() => {
+        if(tipo !== "ropa"){
+            setTallas([]);
+            setStockTallas({});
+        }
+    }, [tipo]);
+
     const handleTallas = (e) =>{
         const {value, checked} = e.target;
         if(checked){
             setTallas([...tallas, value]);
         }else{
-            setTallas(tallas.filter((talla)=> talla != value));
+            setTallas(tallas.filter((t)=> t != value));
         }
     };
 
@@ -128,13 +135,23 @@ function Home() {
             stock: stockTallas[talla] || 0
         }));
 
+        console.log("TALLAS:", tallas);
+
+        console.log(
+            "VARIANTES:",
+            variantes
+        );
+
         const nuevoProducto = new FormData();
         nuevoProducto.append("producto", producto);
         nuevoProducto.append("precio", precio);
         nuevoProducto.append("id_artista", idArtista);
         nuevoProducto.append("tipo", tipo);
-        nuevoProducto.append("tallas", JSON.stringify(tallas));
-        nuevoProducto.append("variantes", JSON.stringify(variantes));
+        //nuevoProducto.append("talla", JSON.stringify(tallas));
+        if(tipo === "ropa"){
+            nuevoProducto.append("variantes", JSON.stringify(variantes));
+        }
+        nuevoProducto.append("stock", stock);
         nuevoProducto.append("descripcion", descripcion);
         nuevoProducto.append("imagen", imagen);
 

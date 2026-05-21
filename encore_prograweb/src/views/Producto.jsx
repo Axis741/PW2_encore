@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { verificarSesion } from '../../../services/usuariosService';
-import { getProductosById } from '../../../services/productosService';
+import { getProductosById, getVariantesById } from '../../../services/productosService';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sProducto.css'
 import { useState } from 'react';
@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 function Producto(){
     const {id} = useParams();
     const [producto, setProducto] = useState(null);
+    const [variantes, setVariantes] = useState([]);
 
     const navigate = useNavigate();
 
@@ -45,6 +46,16 @@ function Producto(){
         fetchProducto();
     }, [id]);
 
+    useEffect(() => {
+        const fetchVariantes = async() => {
+            const res = await getVariantesById(id);
+            if(res?.success){
+                setVariantes(res.data);
+            }
+        };
+        fetchVariantes();
+    }, [id]);
+
     if(!producto){
         return <h1>Cargando...</h1>;
     }
@@ -74,7 +85,7 @@ function Producto(){
     <main className="product-container">
 
         <div className="product-image">
-            <img src="https://shop.imaginedragonsmusic.com/cdn/shop/files/PRODUCT_IMDR_ECOMM_25_FIREINTHESEHILLS_HOODIE_ADULT_B.png?v=1763060643&width=1080" alt="Tshirt"/>
+            <img src={`http://localhost:8080/uploads/${producto.img_producto}`} alt={producto.nombre_producto}/>
         </div>
 
         <div className="product-info">
@@ -84,11 +95,9 @@ function Producto(){
             <div className="sizes">
                 <p>SIZE</p>
                 <div className="size-options">
-                    <button>S</button>
-                    <button>M</button>
-                    <button>L</button>
-                    <button>XL</button>
-                    <button>2XL</button>
+                    {variantes.map((variante) => (
+                       <button key={variante._id}>{variante.talla}</button>
+                    ))}
                 </div>
             </div>
 
@@ -109,7 +118,7 @@ function Producto(){
 
             <div className="description">
                 <h3>Product Description</h3>
-                <h2>{producto.descripcion}</h2>
+                <h4>{producto.descripcion}</h4>
                 {/* <ul>
                     <li>100% Cotton</li>
                     <li>Crew Neck</li>

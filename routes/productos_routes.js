@@ -7,7 +7,8 @@ const {
   createProducto,
   updateProducto,
   deleteProducto,
-  getProductosByArtista
+  getProductosByArtista,
+  getVariantesById
 } = require('../controllers/productos_controller');
 
 const upload = require("../middlewares/upload");
@@ -56,6 +57,9 @@ router.route('/:id')
   .get(getProductoById)    // Obtener un producto
   .put(updateProducto)     // Actualizar producto
   .delete(deleteProducto); // Eliminar producto
+
+router.route('/variantes/:id')
+  .get(getVariantesById);
 
 
 module.exports = router;

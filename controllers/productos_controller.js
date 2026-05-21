@@ -50,6 +50,36 @@ exports.getProductoById = async (req, res) => {
   }
 };
 
+exports.getVariantesById = async (req, res) => {
+  try{
+    const producto = await productosModel.findById(req.params.id);
+    
+    if (!producto) {
+      return res.status(404).json({
+        success: false,
+        message: 'Producto no encontrado'
+      });
+    }
+
+    const variante = await productoVariantesModel
+      .find({id_producto: req.params.id})
+      .populate('id_producto');
+
+      if (!variante) {
+        return res.status(404).json({
+          success: false,
+          message: 'Variante no encontrada'
+        });
+      }
+    res.status(200).json({
+      success: true,
+      count: variante.length,
+      data: variante
+    });
+  }catch(error){
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 // @desc    Create new product
 // @route   POST /api/v1/productos
@@ -65,26 +95,32 @@ exports.createProducto = async (req, res) => {
       img_producto: req.file ? req.file.filename : null
     });
 
-    const variantes = JSON.parse(req.body.variantes);
-    const variantesProducto = variantes.map((v) =>({
-      id_producto: producto._id,
-      talla: v.tallas,
-      stock: v.stock
-    }));
+    let variantesProducto = [];
+
+    if(req.body.tipo === "ropa"){
+      const variantes = JSON.parse(req.body.variantes);
+        variantesProducto = variantes.map((v) =>({
+        id_producto: producto._id,
+        talla: v.talla,
+        stock: Number(v.stock)
+      }));
+    }else{
+      variantesProducto = [{
+        id_producto: producto._id,
+        stock: Number(req.body.stock)
+      }];
+    }
+    
     
     await productoVariantesModel.insertMany(variantesProducto);
 
     res.status(201).json({
       success: true,
-      data: producto
-    });
-
-    res.status(201).json({
-      success: true,
-      data: variantes
+      data: {producto, variantes: variantesProducto}
     });
 
   } catch (error) {
+    console.log(error);
     res.status(400).json({ success: false, message: error.message });
   }
 };

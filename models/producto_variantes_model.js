@@ -9,7 +9,7 @@ const productoVarianteSchema = new mongoose.Schema({
 
   talla: {
     type: String,
-    required: [true, "Favor de ingresar la talla"]
+    default: null
   },
 
   stock: {
