@@ -1,19 +1,15 @@
-// <!DOCTYPE html>
-// <html lang="es">
-// <head>
-//     <meta charset="UTF-8">
-//     <title>Producto</title>
-//     <link rel="stylesheet" href="estilos/sProducto.css">
-//     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-//     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-// </head>
-// <body>
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { verificarSesion } from '../../../services/usuariosService';
+import { getProductosById } from '../../../services/productosService';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sProducto.css'
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 function Producto(){
+    const {id} = useParams();
+    const [producto, setProducto] = useState(null);
+
     const navigate = useNavigate();
 
     const handleAgregarCarrito = () => {
@@ -38,6 +34,20 @@ function Producto(){
 
         revisarSesion();
     };
+
+    useEffect(() => {
+        const fetchProducto = async() => {
+            const res = await getProductosById(id);
+            if(res?.success){
+                setProducto(res.data);
+            }
+        };
+        fetchProducto();
+    }, [id]);
+
+    if(!producto){
+        return <h1>Cargando...</h1>;
+    }
 
     return(
         <>
@@ -68,8 +78,8 @@ function Producto(){
         </div>
 
         <div className="product-info">
-            <h1>T Shirt - Toxicity</h1>
-            <h2>$35.69</h2>
+            <h1>{producto.nombre_producto}</h1>
+            <h2>$ {producto.precio}</h2>
 
             <div className="sizes">
                 <p>SIZE</p>
@@ -99,13 +109,14 @@ function Producto(){
 
             <div className="description">
                 <h3>Product Description</h3>
-                <ul>
+                <h2>{producto.descripcion}</h2>
+                {/* <ul>
                     <li>100% Cotton</li>
                     <li>Crew Neck</li>
                     <li>Machine Wash</li>
                     <li>Regular Fit</li>
                     <li>Screen Print Design</li>
-                </ul>
+                </ul> */}
             </div>
 
         </div>

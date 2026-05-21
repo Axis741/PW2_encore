@@ -1,4 +1,5 @@
-const productosModel = require('../../models/productos_model');
+const productoVariantesModel = require('../models/producto_variantes_model');
+const productosModel = require('../models/productos_model');
 
 
 // @desc    Get all products
@@ -8,7 +9,7 @@ exports.getProductos = async (req, res) => {
   try {
     const productos = await productosModel
       .find()
-      .populate('id_tipo')
+      .populate('tipo')
       .populate('id_artista');
 
     res.status(200).json({
@@ -30,7 +31,6 @@ exports.getProductoById = async (req, res) => {
   try {
     const producto = await productosModel
       .findById(req.params.id)
-      .populate('id_tipo')
       .populate('id_artista');
 
     if (!producto) {
@@ -56,11 +56,32 @@ exports.getProductoById = async (req, res) => {
 // @access  Public (luego puedes protegerlo con auth)
 exports.createProducto = async (req, res) => {
   try {
-    const producto = await productosModel.create(req.body);
+    const producto = await productosModel.create({
+      nombre_producto: req.body.producto,
+      precio: req.body.precio,
+      id_artista: req.body.id_artista,
+      tipo: req.body.tipo,
+      descripcion: req.body.descripcion,
+      img_producto: req.file ? req.file.filename : null
+    });
+
+    const variantes = JSON.parse(req.body.variantes);
+    const variantesProducto = variantes.map((v) =>({
+      id_producto: producto._id,
+      talla: v.tallas,
+      stock: v.stock
+    }));
+    
+    await productoVariantesModel.insertMany(variantesProducto);
 
     res.status(201).json({
       success: true,
       data: producto
+    });
+
+    res.status(201).json({
+      success: true,
+      data: variantes
     });
 
   } catch (error) {

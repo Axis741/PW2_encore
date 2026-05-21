@@ -1,23 +1,87 @@
-// <!DOCTYPE html>
-// <html lang="es">
-// <head>
-// <meta charset="UTF-8">
-// <meta name="viewport" content="width=device-width, initial-scale=1.0">
-// <title>Admin - Subir Producto</title>
-
-// <link rel="stylesheet" href="estilos/sAdmin.css">
-// <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-// </head>
-// <body>
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { verificarSesion } from '../../../services/usuariosService';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sAdmin.css'
+import { crearProducto } from '../../../services/productosService';
+import {getArtistas} from '../../../services/artistasService';
 
 function Admin(){
-    const [preview, setPreview] = useState("");
+    const[producto, setProducto] = useState("");
+    const[precio, setPrecio] = useState("");
+    const[idArtista, setArtista] = useState("");
+    const[tipo, setTipo] = useState("");
+    const[descripcion, setDescripcion] = useState("");
+    const[tallas, setTallas] = useState([]);
+    const[imagen, setImagen] = useState("");
+
+    const[mensajeVisible, setMensajeVisible] = useState("");
+    const[campoError, setCampoError] = useState("");
+
+    const[artistas, setArtistas] = useState([]);
+
+    const fileInputeRef = useRef(null);
+
+    useEffect(()=>{
+        if(mensajeVisible){
+            const timer = setTimeout(()=>{
+                setMensajeVisible("");
+            },2000);
+            return()=>clearTimeout(timer);
+        }
+    },[mensajeVisible]);
+
+    useEffect(() => {
+        const fetchArtistas = async () => {
+            const res = await getArtistas();
+            setArtistas(res.data);
+        };
+        fetchArtistas();
+    }, []);
+
+    const handleTallas = (e) =>{
+        const {value, checked} = e.target;
+        if(checked){
+            setTallas([...tallas, value]);
+        }else{
+            setTallas(tallas.filter((talla)=> talla != value));
+        }
+    };
+
+    const handleGuardar=async(e)=>{
+        e.preventDefault();
+
+        const nuevoProducto = new FormData();
+        nuevoProducto.append("producto", producto);
+        nuevoProducto.append("precio", precio);
+        nuevoProducto.append("id_artista", idArtista);
+        nuevoProducto.append("tipo", tipo);
+        nuevoProducto.append("tallas", JSON.stringify(tallas));
+        nuevoProducto.append("descripcion", descripcion);
+        nuevoProducto.append("imagen", imagen);
+
+        const res = await crearProducto(nuevoProducto);
+        console.log(res);
+
+        if(res?.success){
+            setProducto("");
+            setPrecio("");
+            setArtista("");
+            setTipo("");
+            setTallas([]);
+            setDescripcion("");
+            setImagen(null);
+
+            if (fileInputeRef.current){
+                fileInputeRef.current.value = "";
+            }
+
+        }
+        //else{
+        //     setMensajeVisible(res?.message);
+        //     if(res?.message === " ")
+        // }
+    }
 
     const navigate = useNavigate();
 
@@ -53,10 +117,12 @@ function Admin(){
 
     }, []);
 
+    const [preview, setPreview] = useState("");
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if(file){
             setPreview(URL.createObjectURL(file));
+            setImagen(file);
         }
     };
 
@@ -89,53 +155,60 @@ function Admin(){
 
                 <h1>Subir Producto</h1>
 
-                <form id="productForm">
+                <form id="productForm" onSubmit={handleGuardar}>
 
                     <div class="input-group">
                         <label>Nombre del producto</label>
-                        <input type="text" placeholder="Ej. Playera BTS" required/>
+                        <input type="text" placeholder="Ej. Playera BTS" value={producto} onChange={(e) => setProducto(e.target.value)} required/>
                     </div>
 
                     <div class="input-group">
                         <label>Precio</label>
-                        <input type="number" placeholder="$ MXN" required/>
+                        <input type="number" placeholder="$ MXN" value={precio} onChange={(e) => setPrecio(e.target.value)} required/>
                     </div>
 
                     <div class="input-group">
                         <label>Artista / Banda</label>
-                        <select required>
+                        <select value={idArtista} onChange={(e) => setArtista(e.target.value)} required>
                             <option value="">Selecciona un artista</option>
-                            <option value="bts">BTS</option>
-                            <option value="coldplay">Coldplay</option>
-                            <option value="taylor">Taylor Swift</option>
-                            <option value="conanGray">Conan Gray</option>
+                            {artistas.map((artista) => (
+                                <option key={artista._id} value={artista._id}>{artista.nombre}</option>
+                            ))}
                         </select>
                     </div>
 
                     <div class="input-group">
                         <label>Tipo de producto</label>
-                        <input type="text" placeholder="Ej. Hoddie" required/>
+                        <select value={tipo} onChange={(e) => setTipo(e.target.value)} required>
+                            <option value="">Selecciona el tipo</option>
+                            <option value="ropa">Ropa</option>
+                            <option value="accesorios">Accesorios</option>
+                            <option value="discos">Discos</option>
+                            <option value="lightstick">Lightstick</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                        {/* <input type="text" placeholder="Ej. Hoddie" value={tipo} onChange={(e) => setTipo(e.target.value)} required/> */}
                     </div>
 
                     <div class="input-group">
                         <label>Descripción</label>
-                        <textarea placeholder="Describe el producto..." required></textarea>
+                        <textarea placeholder="Describe el producto..." value={descripcion} onChange={(e) => setDescripcion(e.target.value)} required></textarea>
                     </div>
 
                     <div class="input-group tallas-group" id="tallasGroup">
                         <label>Tallas disponibles</label>
 
                         <div class="tallas">
-                            <label><input type="checkbox" value="S"/> S</label>
-                            <label><input type="checkbox" value="M"/> M</label>
-                            <label><input type="checkbox" value="L"/> L</label>
-                            <label><input type="checkbox" value="XL"/> XL</label>
+                            <label><input type="checkbox"value="S" checked={tallas.includes("S")} onChange={handleTallas}/> S</label>
+                            <label><input type="checkbox" value="M" checked={tallas.includes("M")} onChange={handleTallas}/> M</label>
+                            <label><input type="checkbox" value="L" checked={tallas.includes("L")} onChange={handleTallas}/> L</label>
+                            <label><input type="checkbox" value="XL" checked={tallas.includes("XL")} onChange={handleTallas}/> XL</label>
                         </div>
                     </div>
 
                     <div class="input-group">
                         <label>Imagen del producto</label>
-                        <input type="file" accept="image/*" onChange={handleImageChange} required/>
+                        <input type="file" name="imagen" accept="image/*" onChange={handleImageChange} ref={fileInputeRef} required/>
                     </div>
 
                     <div class="image-preview">

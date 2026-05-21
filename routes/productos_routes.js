@@ -10,6 +10,9 @@ const {
   getProductosByArtista
 } = require('../controllers/productos_controller');
 
+const upload = require("../middlewares/upload");
+const multer = require("multer");
+
 
 // Middleware de prueba
 router.use((req, res, next) => {
@@ -19,9 +22,28 @@ router.use((req, res, next) => {
 
 
 // GET ALL + CREATE
-router.route('/productos')
+router.route('/')
   .get(getProductos)       // Obtener todos los productos
-  .post(createProducto);   // Crear producto
+  //.post(createProducto);   // Crear producto
+  .post((req,res)=>{
+    upload.single("imagen")(req,res, function(err){
+      if(err instanceof multer.MulterError){
+        if(err.code === "LIMIT_FILE_SIZE"){
+          return res.status(400).json({
+            success: false,
+            message: "La imagen es demasiado pesada. Máximo 1MB"
+          });
+        }
+      }else if(err){
+        return res.status(400).json[{
+          success: false,
+          message: err.message
+        }];
+      }
+
+      createProducto(req, res);
+    });
+  });
 
 
 // FILTRO POR ARTISTA
@@ -30,7 +52,7 @@ router.route('/productos/artista/:id')
 
 
 // GET BY ID + UPDATE + DELETE
-router.route('/productos/:id')
+router.route('/:id')
   .get(getProductoById)    // Obtener un producto
   .put(updateProducto)     // Actualizar producto
   .delete(deleteProducto); // Eliminar producto

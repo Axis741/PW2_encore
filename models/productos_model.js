@@ -22,9 +22,8 @@ const productosSchema = new mongoose.Schema({
     default: "no-image.jpg"
   },
 
-  id_tipo: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "TipoProducto",
+  tipo: {
+    type: String,
     required: [true, "Favor de especificar el tipo de producto"]
   },
 
