@@ -1,12 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { verificarSesion } from '../../../services/usuariosService';
+import { getTotalesTablas } from '../../../services/reportesService';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sAdmin.css'
 
 function Admin(){
 
     const navigate = useNavigate();
+
+    const [totales, setTotales] = useState({
+        totalArtistas: 0,
+        totalProductos: 0
+    });
 
     useEffect(() => {
 
@@ -34,6 +40,18 @@ function Admin(){
 
         revisarSesion();
 
+    }, []);
+
+    useEffect(() => {
+        const fetchTotalesTablas = async () => {
+            const res = await getTotalesTablas();
+
+            if(res?.success){
+                setTotales(res.data);
+            }
+        };
+
+        fetchTotalesTablas();
     }, []);
 
     return(
@@ -98,7 +116,7 @@ function Admin(){
                     </div>
 
                     <div>
-                        <h2>25</h2>
+                        <h2>{totales.totalProductos}</h2>
                         <span>Productos</span>
                     </div>
                 </div>
@@ -109,7 +127,7 @@ function Admin(){
                     </div>
 
                     <div>
-                        <h2>32</h2>
+                        <h2>{totales.totalArtistas}</h2>
                         <span>Artistas</span>
                     </div>
                 </div>

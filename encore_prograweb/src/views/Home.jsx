@@ -45,13 +45,28 @@ function Home() {
             }
         },[mensajeVisible]);
 
+        //filtro por artista
+        const artistaFiltro = location.state?.artistaFiltro;
+
+        //Aqui le cambie para el filtro --  ASEGURATE DE BORRAR ESTE COMENTARIO DESPUES
         useEffect(() => {
             const fetchProductos = async() => {
                 const res = await getProductos();
-                setProductos(res.data);
+
+                if(res?.success){
+                    let productosFiltrados = res.data;
+
+                    if(artistaFiltro){
+                        productosFiltrados = res.data.filter(
+                            (producto) => producto.id_artista?._id === artistaFiltro
+                        );
+                    }
+                    setProductos(productosFiltrados);
+                }
             };
+
             fetchProductos();
-        }, []);
+        }, [artistaFiltro]);
 
          useEffect(() => {
         const fetchArtistas = async () => {

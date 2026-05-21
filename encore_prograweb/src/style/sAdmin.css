@@ -395,4 +395,12 @@ nav a{
         font-size: 20px;
         margin-left: 20px;
     }
+
+    .statsCards{
+        grid-template-columns: repeat(2,1fr);
+    }
+
+    .dashboardGrid{
+        grid-template-columns: repeat(1,1fr);
+    }
 }

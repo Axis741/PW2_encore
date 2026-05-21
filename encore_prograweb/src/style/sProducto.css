@@ -89,6 +89,9 @@ nav a:hover{
 .product-info h1{
     margin-bottom: 30px;
     font-family: 'Poppins', sans-serif;
+    font-size: clamp(35px, 5vw, 70px);
+    line-height: 1.1;
+    word-break: break-word;
 }
 
 .product-info h2{

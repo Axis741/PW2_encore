@@ -145,7 +145,20 @@ exports.getTotalesTablas = async (req, res) => {
     const totalArtistas = await artistaModel.countDocuments({
       estado: { $ne: "eliminado"}
     });
+
+    const totalProductos = await productoModel.countDocuments();
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        totalArtistas,
+        totalProductos
+      }
+    });
   } catch (error) {
-    
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
