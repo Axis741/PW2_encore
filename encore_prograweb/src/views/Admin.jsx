@@ -3,85 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { verificarSesion } from '../../../services/usuariosService';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sAdmin.css'
-import { crearProducto } from '../../../services/productosService';
-import {getArtistas} from '../../../services/artistasService';
 
 function Admin(){
-    const[producto, setProducto] = useState("");
-    const[precio, setPrecio] = useState("");
-    const[idArtista, setArtista] = useState("");
-    const[tipo, setTipo] = useState("");
-    const[descripcion, setDescripcion] = useState("");
-    const[tallas, setTallas] = useState([]);
-    const[imagen, setImagen] = useState("");
-
-    const[mensajeVisible, setMensajeVisible] = useState("");
-    const[campoError, setCampoError] = useState("");
-
-    const[artistas, setArtistas] = useState([]);
-
-    const fileInputeRef = useRef(null);
-
-    useEffect(()=>{
-        if(mensajeVisible){
-            const timer = setTimeout(()=>{
-                setMensajeVisible("");
-            },2000);
-            return()=>clearTimeout(timer);
-        }
-    },[mensajeVisible]);
-
-    useEffect(() => {
-        const fetchArtistas = async () => {
-            const res = await getArtistas();
-            setArtistas(res.data);
-        };
-        fetchArtistas();
-    }, []);
-
-    const handleTallas = (e) =>{
-        const {value, checked} = e.target;
-        if(checked){
-            setTallas([...tallas, value]);
-        }else{
-            setTallas(tallas.filter((talla)=> talla != value));
-        }
-    };
-
-    const handleGuardar=async(e)=>{
-        e.preventDefault();
-
-        const nuevoProducto = new FormData();
-        nuevoProducto.append("producto", producto);
-        nuevoProducto.append("precio", precio);
-        nuevoProducto.append("id_artista", idArtista);
-        nuevoProducto.append("tipo", tipo);
-        nuevoProducto.append("tallas", JSON.stringify(tallas));
-        nuevoProducto.append("descripcion", descripcion);
-        nuevoProducto.append("imagen", imagen);
-
-        const res = await crearProducto(nuevoProducto);
-        console.log(res);
-
-        if(res?.success){
-            setProducto("");
-            setPrecio("");
-            setArtista("");
-            setTipo("");
-            setTallas([]);
-            setDescripcion("");
-            setImagen(null);
-
-            if (fileInputeRef.current){
-                fileInputeRef.current.value = "";
-            }
-
-        }
-        //else{
-        //     setMensajeVisible(res?.message);
-        //     if(res?.message === " ")
-        // }
-    }
 
     const navigate = useNavigate();
 
@@ -105,26 +28,13 @@ function Admin(){
                         mensaje: "No tiene acceso a esta sección."
                     }
                 });
-            }else{
-                setUsuarioInfo(res.user);
-
             }
-
 
         };
 
         revisarSesion();
 
     }, []);
-
-    const [preview, setPreview] = useState("");
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if(file){
-            setPreview(URL.createObjectURL(file));
-            setImagen(file);
-        }
-    };
 
     return(
         <>
@@ -142,87 +52,201 @@ function Admin(){
                 <a href="/artistas">ARTISTAS/BANDAS</a>
             </nav>
 
-            <div class="icons">
+            <div className="icons">
                 <a href="/admin"><i className="fa-solid fa-gear"></i></a>
                 <a href="/perfil"><i className="fa-solid fa-user"></i></a>
                 <a href="/carrito"><i className="fa-solid fa-cart-shopping"></i></a>
             </div>
         </header>
 
-        <section class="admin-container">
+        <section className="dashboardContainer">
 
-            <div class="admin-card">
+            <div className="dashboardHeader">
+                <div className='dashboardSpaceH'>
+                    <h1>Reportes</h1>
+                    <p>Estadísticas generales de Encore Merch</p>
+                </div>
+            </div>
 
-                <h1>Subir Producto</h1>
+            <div className="statsCards">
 
-                <form id="productForm" onSubmit={handleGuardar}>
-
-                    <div class="input-group">
-                        <label>Nombre del producto</label>
-                        <input type="text" placeholder="Ej. Playera BTS" value={producto} onChange={(e) => setProducto(e.target.value)} required/>
+                <div className="glassCard">
+                    <div className="cardIcon purple">
+                        <i className="fa-solid fa-dollar-sign"></i>
                     </div>
 
-                    <div class="input-group">
-                        <label>Precio</label>
-                        <input type="number" placeholder="$ MXN" value={precio} onChange={(e) => setPrecio(e.target.value)} required/>
+                    <div>
+                        <h2>$45,890</h2>
+                        <span>Ingresos Totales</span>
+                    </div>
+                </div>
+
+                <div className="glassCard">
+                    <div className="cardIcon blue">
+                        <i className="fa-solid fa-cart-shopping"></i>
                     </div>
 
-                    <div class="input-group">
-                        <label>Artista / Banda</label>
-                        <select value={idArtista} onChange={(e) => setArtista(e.target.value)} required>
-                            <option value="">Selecciona un artista</option>
-                            {artistas.map((artista) => (
-                                <option key={artista._id} value={artista._id}>{artista.nombre}</option>
-                            ))}
-                        </select>
+                    <div>
+                        <h2>1,245</h2>
+                        <span>Ventas</span>
+                    </div>
+                </div>
+
+                <div className="glassCard">
+                    <div className="cardIcon yellow">
+                        <i className="fa-solid fa-boxes-stacked"></i>
                     </div>
 
-                    <div class="input-group">
-                        <label>Tipo de producto</label>
-                        <select value={tipo} onChange={(e) => setTipo(e.target.value)} required>
-                            <option value="">Selecciona el tipo</option>
-                            <option value="ropa">Ropa</option>
-                            <option value="accesorios">Accesorios</option>
-                            <option value="discos">Discos</option>
-                            <option value="lightstick">Lightstick</option>
-                            <option value="otro">Otro</option>
-                        </select>
-                        {/* <input type="text" placeholder="Ej. Hoddie" value={tipo} onChange={(e) => setTipo(e.target.value)} required/> */}
+                    <div>
+                        <h2>25</h2>
+                        <span>Productos</span>
+                    </div>
+                </div>
+
+                <div className="glassCard">
+                    <div className="cardIcon pink">
+                        <i className="fa-solid fa-users"></i>
                     </div>
 
-                    <div class="input-group">
-                        <label>Descripción</label>
-                        <textarea placeholder="Describe el producto..." value={descripcion} onChange={(e) => setDescripcion(e.target.value)} required></textarea>
+                    <div>
+                        <h2>32</h2>
+                        <span>Artistas</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div className="dashboardGrid">
+
+                <div className="chartCard">
+
+                    <div className="cardHeader">
+                        <h2>Ventas Generales</h2>
                     </div>
 
-                    <div class="input-group tallas-group" id="tallasGroup">
-                        <label>Tallas disponibles</label>
+                <div className="chartWrapper">
 
-                        <div class="tallas">
-                            <label><input type="checkbox"value="S" checked={tallas.includes("S")} onChange={handleTallas}/> S</label>
-                            <label><input type="checkbox" value="M" checked={tallas.includes("M")} onChange={handleTallas}/> M</label>
-                            <label><input type="checkbox" value="L" checked={tallas.includes("L")} onChange={handleTallas}/> L</label>
-                            <label><input type="checkbox" value="XL" checked={tallas.includes("XL")} onChange={handleTallas}/> XL</label>
+                        <div className="chartScale">
+                            <span>100%</span>
+                            <span>75%</span>
+                            <span>50%</span>
+                            <span>25%</span>
+                            <span>0%</span>
+                        </div>
+
+                        <div className="fakeChart">
+
+                            <div className="barContainer">
+                                <span className="barValue">$1200</span>
+                                <div className="bar" style={{height: "40%"}}></div>
+                                <span className="barLabel">Ropa</span>
+                            </div>
+
+                            <div className="barContainer">
+                                <span className="barValue">$2500</span>
+                                <div className="bar" style={{height: "70%"}}></div>
+                                <span className="barLabel">Accesorios</span>
+                            </div>
+
+                            <div className="barContainer">
+                                <span className="barValue">$1800</span>
+                                <div className="bar" style={{height: "55%"}}></div>
+                                <span className="barLabel">Discos</span>
+                            </div>
+
+                            <div className="barContainer">
+                                <span className="barValue">$3200</span>
+                                <div className="bar" style={{height: "90%"}}></div>
+                                <span className="barLabel">Lightstick</span>
+                            </div>
+
+                            <div className="barContainer">
+                                <span className="barValue">$2100</span>
+                                <div className="bar" style={{height: "100%"}}></div>
+                                <span className="barLabel">Otro</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div className="topArtistsCard">
+
+                    <h2>Ventas p/ Artistas</h2>
+
+                    <div className="topArtist">
+                        <img
+                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStxy_arH94WcVTL_TEp4xCxJQQhDNUHz9Q5vh3bjxZQ1lu0r976eCn4Ep2Ed_1UITdf-2tLCes5Fx1EOpu0uUqwK7VlcNsY8pw7P5zbw&s=10"
+                            alt=""
+                        />
+                        <div>
+                            <h3>Coldplay</h3>
+                            <p>$15,000 vendidos</p>
                         </div>
                     </div>
 
-                    <div class="input-group">
-                        <label>Imagen del producto</label>
-                        <input type="file" name="imagen" accept="image/*" onChange={handleImageChange} ref={fileInputeRef} required/>
+                    <div className="topArtist">
+                        <img
+                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStxy_arH94WcVTL_TEp4xCxJQQhDNUHz9Q5vh3bjxZQ1lu0r976eCn4Ep2Ed_1UITdf-2tLCes5Fx1EOpu0uUqwK7VlcNsY8pw7P5zbw&s=10"
+                            alt=""
+                        />
+                        <div>
+                            <h3>Coldplay</h3>
+                            <p>$15,000 vendidos</p>
+                        </div>
                     </div>
 
-                    <div class="image-preview">
-                        {preview && <img src={preview} alt='preview'></img>}
+                    <div className="topArtist">
+                        <img
+                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStxy_arH94WcVTL_TEp4xCxJQQhDNUHz9Q5vh3bjxZQ1lu0r976eCn4Ep2Ed_1UITdf-2tLCes5Fx1EOpu0uUqwK7VlcNsY8pw7P5zbw&s=10"
+                            alt=""
+                        />
+                        <div>
+                            <h3>Coldplay</h3>
+                            <p>$15,000 vendidos</p>
+                        </div>
                     </div>
 
-                    <button type="submit" className="btn_subir">Subir Producto</button>
+                    <div className="topArtist">
+                        <img
+                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStxy_arH94WcVTL_TEp4xCxJQQhDNUHz9Q5vh3bjxZQ1lu0r976eCn4Ep2Ed_1UITdf-2tLCes5Fx1EOpu0uUqwK7VlcNsY8pw7P5zbw&s=10"
+                            alt=""
+                        />
+                        <div>
+                            <h3>Coldplay</h3>
+                            <p>$15,000 vendidos</p>
+                        </div>
+                    </div>
 
-                </form>
+                    <div className="topArtist">
+                        <img
+                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStxy_arH94WcVTL_TEp4xCxJQQhDNUHz9Q5vh3bjxZQ1lu0r976eCn4Ep2Ed_1UITdf-2tLCes5Fx1EOpu0uUqwK7VlcNsY8pw7P5zbw&s=10"
+                            alt=""
+                        />
+                        <div>
+                            <h3>Coldplay</h3>
+                            <p>$15,000 vendidos</p>
+                        </div>
+                    </div>
+
+                    <div className="topArtist">
+                        <img
+                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStxy_arH94WcVTL_TEp4xCxJQQhDNUHz9Q5vh3bjxZQ1lu0r976eCn4Ep2Ed_1UITdf-2tLCes5Fx1EOpu0uUqwK7VlcNsY8pw7P5zbw&s=10"
+                            alt=""
+                        />
+                        <div>
+                            <h3>Coldplay</h3>
+                            <p>$15,000 vendidos</p>
+                        </div>
+                    </div>
+
+                </div>
 
             </div>
 
         </section>
-
         
         </>
 

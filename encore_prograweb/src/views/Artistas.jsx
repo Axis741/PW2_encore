@@ -223,13 +223,13 @@ function Artistas(){
 
         <main className="artists">
             {artistas.map((artista) => (
-                <a href="#" className="artist-card" key={artista._id}>
+                <button className="artist-card" key={artista._id}>
                     <img 
                         src={`http://localhost:8080/uploads/${artista.foto}`} 
                         alt={artista.nombre}
                     />
                     <p>{artista.nombre}</p>
-                </a>
+                </button>
             ))}
         </main>
 

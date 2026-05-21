@@ -36,155 +36,347 @@ nav a{
     font-size:20px;
 }
 
-.admin-container{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:85vh;
-    padding:40px;
-}
-
-.admin-card{
-    background:#1a1a1a;
-    border: 1px solid #7c51c2;
-    width:600px;
-    max-width:95%;
-    border-radius:25px;
-    padding:40px;
-    box-shadow:0 20px 40px rgba(0,0,0,0.5);
-}
-
-.admin-card h1{
-    margin-bottom:30px;
-    text-align:center;
+.reportesContainer{
+    padding: 40px 60px;
     color: white;
 }
 
-.input-group{
-    margin-bottom:20px;
-    display:flex;
-    flex-direction:column;
+.reportesHeader{
+    margin-bottom: 40px;
 }
 
-.input-group label{
-    margin-bottom:5px;
-    font-size:14px;
-    opacity:0.7;
+.reportesHeader h1{
+    font-size: 45px;
+    margin-bottom: 10px;
+}
+
+.reportesHeader p{
+    opacity: 0.8;
+}
+
+.statsGrid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.statCard{
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 25px;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: .3s;
+}
+
+.statCard:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(124,81,194,.4);
+}
+
+.statCard i{
+    font-size: 35px;
+    color: #c9a7ff;
+}
+
+.statCard h2{
+    font-size: 30px;
+}
+
+.reportBox{
+    background: rgba(20,20,20,0.75);
+    border: 1px solid rgba(124,81,194,0.3);
+    border-radius: 25px;
+    padding: 30px;
+    margin-bottom: 35px;
+    backdrop-filter: blur(10px);
+}
+
+.reportBox h2{
+    margin-bottom: 25px;
+}
+
+/* ARTISTAS */
+.artistSales{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.artistSaleCard{
+    background: rgba(255,255,255,.05);
+    border-radius: 18px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    transition: .3s;
+}
+
+.artistSaleCard:hover{
+    background: rgba(124,81,194,.15);
+}
+
+.artistSaleCard img{
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.artistSaleCard h3{
+    margin-bottom: 5px;
+}
+
+.dashboardContainer{
+    padding: 40px;
     color: white;
 }
 
-.input-group input{
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    background:#2a2a2a;
-    color:white;
-    outline:none;
+.dashboardHeader{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 35px;
 }
 
-.input-group select{
-    width:100%;
-    margin-top:5px;
-    padding:10px;
-    border-radius:10px;
-    border:none;
-    outline:none;
-    background:#2a2a2a;
-    color:white;
-    font-size:16px;
-    cursor:pointer;
+.dashboardSpaceH{
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
 }
 
-.input-group select:focus{
-    border:1px solid #7c51c2;
+.dashboardHeader h1{
+    font-size: 50px;
+    font-weight: 700;
 }
 
-.input-group select{
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-
-    background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
+.dashboardHeader p{
+    opacity: .7;
 }
 
-.image-preview{
-    margin:20px 0;
-    display:flex;
-    justify-content:center;
+/* STATS */
+.statsCards{
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 25px;
+    margin-bottom: 30px;
 }
 
-.image-preview img{
-    max-width:200px;
-    border-radius:15px;
-    display:block;
+.glassCard{
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.08);
+    backdrop-filter: blur(12px);
+    border-radius: 28px;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: .3s;
 }
 
-.btn_subir{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:30px;
-    background:linear-gradient(135deg,#7c51c2,#512da8);
-    color:white;
-    font-weight:500;
-    cursor:pointer;
-    transition:0.3s;
+.glassCard:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(124,81,194,.25);
 }
 
-.btn_subir:hover{
-    transform:scale(1.05);
-    box-shadow:0 10px 25px rgba(124,81,194,0.6);
+.cardIcon{
+    width: 65px;
+    height: 65px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
 }
 
-textarea{
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    background:#2a2a2a;
-    color:white;
-    outline:none;
-    resize:none;
-    height:100px;
+.cardIcon.purple{
+    background: rgba(124,81,194,.25);
+    color: #d5b3ff;
 }
 
-select{
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    background:#2a2a2a;
-    color:white;
-    outline:none;
+.cardIcon.blue{
+    background: rgba(0,153,255,.2);
+    color: #8fd3ff;
 }
 
-/* TALLAS
-.tallas-group{
-    display:none;
-} */
-
-.tallas{
-    display:flex;
-    gap:15px;
-    flex-wrap:wrap;
+.cardIcon.pink{
+    background: rgba(255,0,128,.15);
+    color: #ff9dd0;
 }
 
-.tallas label{
-    background:#2a2a2a;
-    padding:8px 12px;
-    border-radius:20px;
-    cursor:pointer;
-    transition:0.3s;
+.cardIcon.yellow{
+    background: rgba(255, 230, 0, 0.15);
+    color: #fffc9d;
 }
 
-.tallas input{
-    margin-right:5px;
+.glassCard h2{
+    font-size: 32px;
 }
 
-.tallas label:hover{
-    background:#7c51c2;
+.glassCard span{
+    opacity: .7;
 }
 
+/* GRID */
+.dashboardGrid{
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;
+}
+
+/* CHART */
+.chartCard{
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 28px;
+    padding: 30px;
+    backdrop-filter: blur(12px);
+    max-height: 60vh;
+    overflow-y: hidden;
+}
+
+.topArtistsCard{
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 28px;
+    padding: 30px;
+    backdrop-filter: blur(12px);
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.cardHeader{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.cardHeader select{
+    background: rgba(255,255,255,.08);
+    border: none;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 12px;
+}
+
+.chartWrapper{
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+}
+
+.fakeChart{
+    flex: 1;
+    height: 320px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    gap: 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(255,255,255,.08);
+}
+
+.chartScale{
+    height: 320px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    color: rgba(255,255,255,.6);
+    font-size: 13px;
+    font-weight: 500;
+
+    padding-bottom: 10px;
+}
+
+.barContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+}
+
+.bar{
+    width: 100px;
+    border-radius: 18px 18px 0 0;
+    background: linear-gradient(180deg,#b58cff,#7c51c2);
+    box-shadow: 0 10px 25px rgba(124,81,194,.35);
+    transition: .3s;
+}
+
+.bar:hover{
+    transform: translateY(-5px);
+}
+
+.barValue{
+    margin-bottom: 10px;
+    color: white;
+    font-weight: 600;
+}
+
+.barLabel{
+    margin-top: 12px;
+    color: rgba(255,255,255,.75);
+    font-size: 13px;
+}
+
+.topArtistsCard h2{
+    margin-bottom: 25px;
+}
+
+.topArtist{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(255,255,255,.04);
+    padding: 15px;
+    border-radius: 18px;
+    margin-bottom: 18px;
+    transition: .3s;
+}
+
+.topArtist:hover{
+    background: rgba(124,81,194,.18);
+}
+
+.topArtist img{
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.topArtist p{
+    opacity: .7;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar{
+    width: 8px;
+}
+
+::-webkit-scrollbar-track{
+    background: rgba(0,0,0,0.25);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb{
+    background: #d1c4ff;
+    border-radius: 10px;
+    border: 2px solid rgba(0,0,0,0.15);
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background: #ffffff;
+}
 
 @media (max-width: 900px){
     header{

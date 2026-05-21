@@ -1,5 +1,6 @@
 const compraModel = require('../models/compras_model');
-
+const artistaModel = require("../models/artista_model");
+const productoModel = require("../models/productos_model");
 
 // @desc    Reporte general de ventas
 // @route   GET /api/v1/reportes/ventas-general
@@ -136,5 +137,15 @@ exports.getTotales = async (req, res) => {
       success: false,
       message: error.message
     });
+  }
+};
+
+exports.getTotalesTablas = async (req, res) => {
+  try {
+    const totalArtistas = await artistaModel.countDocuments({
+      estado: { $ne: "eliminado"}
+    });
+  } catch (error) {
+    
   }
 };
