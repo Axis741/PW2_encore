@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { verificarSesion } from '../../../services/usuariosService';
 import { getProductosById, getVariantesById } from '../../../services/productosService';
+import { agregarItemCarrito } from '../../../services/carritoService';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sProducto.css'
 import { useState } from 'react';
@@ -10,30 +11,51 @@ function Producto(){
     const {id} = useParams();
     const [producto, setProducto] = useState(null);
     const [variantes, setVariantes] = useState([]);
+    const [varianteSeleccionada, setVarianteSeleccionada] = useState(null);
+    const [cantidad, setCantidad] = useState(1);
+    const [usuarioInfo, setUsuarioInfo] = useState(null);
+    const [mensaje, setMensaje] = useState("");
 
     const navigate = useNavigate();
 
-    const handleAgregarCarrito = () => {
-        // const usuario = JSON.parse(localStorage.getItem("usuario"));
+    const handleAgregarCarrito = async () => {
 
-        // if(!usuario){
-        //     navigate("/login", {state: {mensaje: "Debe iniciar sesión primero."}});
-        // }
-        const revisarSesion = async () => {
-            const res = await verificarSesion();
+        const res = await verificarSesion();
 
-            if(!res?.success){
-                navigate("/login", {
-                    state: {
-                        mensaje: "Debe iniciar sesión primero."
-                    }
-                });
-            }else{
-                setUsuarioInfo(res.user);
+        if(!res?.success){
+            navigate("/login", {
+                state: {
+                    mensaje: "Debe iniciar sesión primero."
+                }
+            });
+            return;
+        }
+
+        const usuario = res.user;
+
+        // Validar variante
+        if(variantes.length > 0 && !varianteSeleccionada){
+            setMensaje("Seleccione una talla");
+            return;
+        }
+
+        // Si el producto no tiene talla
+        const varianteFinal =
+            varianteSeleccionada || variantes[0];
+
+        const carritoRes = await agregarItemCarrito(
+            usuario.id,
+            {
+                id_variante: varianteFinal._id,
+                cantidad
             }
-        };
+        );
 
-        revisarSesion();
+        if(carritoRes?.success){
+            setMensaje("Producto agregado al carrito");
+        }else{
+            setMensaje(carritoRes?.message || "Error");
+        }
     };
 
     useEffect(() => {
@@ -55,6 +77,12 @@ function Producto(){
         };
         fetchVariantes();
     }, [id]);
+
+    useEffect(() => {
+        if(variantes.length === 1){
+            setVarianteSeleccionada(variantes[0]);
+        }
+    }, [variantes]);
 
     if(!producto){
         return <h1>Cargando...</h1>;
@@ -82,6 +110,12 @@ function Producto(){
         </div>
     </header>
 
+    {mensaje && (
+        <p className="mensajeNotify">
+            {mensaje}
+        </p>
+    )}
+
     <main className="product-container">
 
         <div className="product-image">
@@ -96,7 +130,17 @@ function Producto(){
                 <p>SIZE</p>
                 <div className="size-options">
                     {variantes.map((variante) => (
-                       <button key={variante._id}>{variante.talla}</button>
+                       <button
+                            key={variante._id}
+                            onClick={() => setVarianteSeleccionada(variante)}
+                            className={
+                                varianteSeleccionada?._id === variante._id
+                                    ? "selected-size"
+                                    : ""
+                            }
+                        >
+                            {variante.talla || "Única"}
+                        </button>
                     ))}
                 </div>
             </div>
@@ -110,9 +154,21 @@ function Producto(){
                 </button>
 
                 <div className="item-quantity">
-                    <button>-</button>
-                    <span>1</span>
-                    <button>+</button>
+                    <button
+                        onClick={() =>
+                            setCantidad((prev) => (prev > 1 ? prev - 1 : 1))
+                        }
+                    >
+                        -
+                    </button>
+
+                    <span>{cantidad}</span>
+
+                    <button
+                        onClick={() => setCantidad((prev) => prev + 1)}
+                    >
+                        +
+                    </button>
                 </div>
             </div>
 

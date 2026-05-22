@@ -67,6 +67,7 @@ nav a:hover{
 .cart-content{
     display: flex;
     gap: 40px;
+    flex-direction: column;
 }
 
 /* Items */

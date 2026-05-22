@@ -26,8 +26,13 @@ exports.confirmarOrden = async (req, res) => {
     // 2. Procesar cada item del carrito
     for (const item of carrito.items) {
       const variante = await productoVarianteModel
-        .findById(item.id_variante)
-        .populate('id_producto');
+      .findById(item.id_variante)
+      .populate({
+          path: 'id_producto',
+          populate: {
+              path: 'id_artista'
+          }
+      });
 
       if (!variante) {
         return res.status(404).json({
@@ -53,9 +58,24 @@ exports.confirmarOrden = async (req, res) => {
       total += precio * item.cantidad;
 
       itemsCompra.push({
-        id_variante: variante._id,
-        cantidad: item.cantidad,
-        precioUnitario: precio
+          id_variante: variante._id,
+
+          id_producto: variante.id_producto._id,
+
+          id_artista:
+              variante.id_producto.id_artista._id,
+
+          nombre_producto:
+              variante.id_producto.nombre_producto,
+
+          nombre_artista:
+              variante.id_producto.id_artista.nombre,
+
+          talla: variante.talla,
+
+          cantidad: item.cantidad,
+
+          precioUnitario: precio
       });
     }
 

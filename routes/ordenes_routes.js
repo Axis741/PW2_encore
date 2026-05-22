@@ -15,13 +15,13 @@ router.use((req, res, next) => {
 
 
 // CONFIRMAR ORDEN (checkout)
-// POST /api/v1/ordenes/confirmar
+// POST
 router.route('/ordenes/confirmar')
   .post(confirmarOrden);
 
 
 // OBTENER ÓRDENES POR USUARIO
-// GET /api/v1/ordenes/usuario/:id
+// GET
 router.route('/ordenes/usuario/:id')
   .get(getOrdenesByUsuario);
 

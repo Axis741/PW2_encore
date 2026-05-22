@@ -6,6 +6,7 @@ const eventosRoute = require('./routes/eventos_routes');
 const ordenesRoute = require('./routes/ordenes_routes');
 const reportesRoute = require('./routes/reportes_routes');
 const productosRoutes = require('./routes/productos_routes');
+const carritoRoutes = require('./routes/carrito_routes');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const uri = 'mongodb://localhost:27017/Encore_Merch';
@@ -27,6 +28,7 @@ app.use('/api/eventos', eventosRoute);
 app.use('/api/ordenes', ordenesRoute);
 app.use('/api/reportes', reportesRoute);
 app.use('/api/producto', productosRoutes);
+app.use('/api/carrito', carritoRoutes);
 
 app.use("/uploads", express.static("uploads"));
 

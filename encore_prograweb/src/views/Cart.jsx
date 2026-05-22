@@ -11,6 +11,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { verificarSesion } from '../../../services/usuariosService';
+import { getCarritoByUsuario, actualizarCantidadItem, eliminarItemCarrito } from '../../../services/carritoService';
+import { confirmarOrden } from '../../../services/ordenesService';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sCart.css'
 
@@ -18,6 +20,20 @@ function Carrito(){
     const navigate = useNavigate();
 
     const [showModal, setShowModal] = useState(false);
+    const [usuarioInfo, setUsuarioInfo] = useState(null);
+    const [carrito, setCarrito] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [procesandoPago, setProcesandoPago] = useState(false);
+
+    const fetchCarrito = async (userId) => {
+
+        const carritoRes = await getCarritoByUsuario(userId);
+
+        if(carritoRes?.success){
+            setCarrito(carritoRes.data);
+        }
+
+    };
 
     useEffect(() => {
 
@@ -33,15 +49,114 @@ function Carrito(){
                     }
                 });
 
-            }else{
-                setUsuarioInfo(res.user);
+                return;
             }
+
+            setUsuarioInfo(res.user);
+
+            await fetchCarrito(res.user.id);
+
+            setLoading(false);
 
         };
 
         revisarSesion();
 
     }, []);
+
+    const actualizarCantidad = async (
+        id_variante,
+        nuevaCantidad
+    ) => {
+
+        if(nuevaCantidad < 1) return;
+
+        const res = await actualizarCantidadItem(
+            usuarioInfo.id,
+            id_variante,
+            nuevaCantidad
+        );
+
+        if(res?.success){
+            setLoading(true);
+            await fetchCarrito(usuarioInfo.id);
+            setLoading(false);
+        }
+    };
+
+    const eliminarProducto = async (id_variante) => {
+
+        const res = await eliminarItemCarrito(
+            usuarioInfo.id,
+            id_variante
+        );
+
+        if(res?.success){
+            setLoading(true);
+            await fetchCarrito(usuarioInfo.id);
+            setLoading(false);
+        }
+    };
+
+    const handlePagar = async (e) => {
+
+        e.preventDefault();
+
+        try{
+
+            setProcesandoPago(true);
+
+            const res = await confirmarOrden(
+                usuarioInfo.id
+            );
+
+            if(res?.success){
+
+                alert("Compra realizada correctamente");
+
+                setShowModal(false);
+
+                await fetchCarrito(usuarioInfo.id);
+
+            }else{
+
+                alert(
+                    res?.message ||
+                    "Error al procesar compra"
+                );
+
+            }
+
+        }catch(error){
+
+            console.error(error);
+
+            alert("Error al procesar pago");
+
+        }finally{
+
+            setProcesandoPago(false);
+
+        }
+
+    };
+
+    const subtotal = carrito?.items?.reduce(
+        (acc, item) => {
+
+            const precio =
+                item.id_variante?.id_producto?.precio || 0;
+
+            return acc + (precio * item.cantidad);
+
+        },
+        0
+    );
+
+    if(loading){
+        return <h1>Cargando carrito...</h1>;
+    }
+
     return(
         <>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
@@ -73,57 +188,128 @@ function Carrito(){
 
             <div class="cart-content">
 
-                <div class="cart-items">
+                {carrito?.items?.length > 0 ? (
 
-                    <div class="cart-item">
-                        <img src="https://shop.imaginedragonsmusic.com/cdn/shop/files/PRODUCT_IMDR_ECOMM_25_FIREINTHESEHILLS_HOODIE_ADULT_B.png?v=1763060643&width=1080" alt="Producto"/>
+                    carrito.items.map((item) => {
 
-                        <div class="item-info">
-                            <h3>System Of A Down</h3>
-                            <p>T Shirt - Toxicity</p>
-                            <p><strong>Status:</strong> In Stock</p>
-                            <p><strong>Delivery:</strong> Arrives in 3-5 days</p>
-                        </div>
+                        const producto =
+                            item.id_variante?.id_producto;
 
-                        <div class="item-quantity">
-                            <button>-</button>
-                            <span>2</span>
-                            <button>+</button>
-                        </div>
+                        //if(!producto){window.location.reload()}
+                        
 
-                        <div class="item-price">
-                            $35.69
-                        </div>
-                    </div>
+                        return(
 
-                    <div class="cart-item">
-                        <img src="https://shop.conangray.com/cdn/shop/files/black-tee.png?v=1712610927" alt="Producto"/>
+                            <div className="cart-item" key={item._id}>
 
-                        <div class="item-info">
-                            <h3>Pink Floyd</h3>
-                            <p>DSOTM 1973 Tour Shirt</p>
-                            <p><strong>Status:</strong> In Stock</p>
-                            <p><strong>Delivery:</strong> Arrives in 3-5 days</p>
-                        </div>
+                                <img
+                                    src={`http://localhost:8080/uploads/${producto.img_producto}`}
+                                    alt={producto.nombre_producto}
+                                />
 
-                        <div class="item-quantity">
-                            <button>-</button>
-                            <span>1</span>
-                            <button>+</button>
-                        </div>
+                                <div className="item-info">
 
-                        <div class="item-price">
-                            $45.00
-                        </div>
-                    </div>
+                            
 
-                </div>
+                                    <p>
+                                        {producto.nombre_producto}
+                                    </p>
+
+                                    {item.id_variante?.talla && (
+                                        <p>
+                                            <strong>Talla:</strong>
+                                            {" "}
+                                            {item.id_variante.talla}
+                                        </p>
+                                    )}
+
+                                    <p>
+                                        <strong>Status:</strong>
+                                        {" "}
+                                        In Stock
+                                    </p>
+
+                                    <p>
+                                        <strong>Delivery:</strong>
+                                        {" "}
+                                        Arrives in 3-5 days
+                                    </p>
+
+                                </div>
+
+                                <div className="item-quantity">
+
+                                    <button
+                                        onClick={() =>
+                                            actualizarCantidad(
+                                                item.id_variante._id,
+                                                item.cantidad - 1
+                                            )
+                                        }
+                                    >
+                                        -
+                                    </button>
+
+                                    <span>{item.cantidad}</span>
+
+                                    <button
+                                        onClick={() =>
+                                            actualizarCantidad(
+                                                item.id_variante._id,
+                                                item.cantidad + 1
+                                            )
+                                        }
+                                    >
+                                        +
+                                    </button>
+
+                                </div>
+
+                                <div className="item-price">
+
+                                    $
+                                    {(
+                                        producto.precio *
+                                        item.cantidad
+                                    ).toFixed(2)}
+
+                                    <button
+                                        className="btn-delete"
+                                        onClick={() =>
+                                            eliminarProducto(
+                                                item.id_variante._id
+                                            )
+                                        }
+                                    >
+                                        <i className="fa-solid fa-trash"></i>
+                                    </button>
+
+                                </div>
+
+                            </div>
+                        );
+                    })
+
+                ) : (
+
+                    <h2>Tu carrito está vacío</h2>
+
+                )}
 
                 <div class="cart-summary">
-                    <h3>Subtotal <span>$98.33</span></h3>
+                    <h3>
+                        Subtotal
+                        <span>
+                            ${subtotal?.toFixed(2)}
+                        </span>
+                    </h3>
                     <p>Shipping calculated at checkout</p>
 
-                    <button class="checkout-btn" onClick={() => setShowModal(true)}>
+                    <button
+                        className="checkout-btn"
+                        disabled={!carrito?.items?.length}
+                        onClick={() => setShowModal(true)}
+                    >
                         Proceder al Pago
                     </button>
 
@@ -140,7 +326,7 @@ function Carrito(){
 
                     <h1>Pago con Tarjeta</h1>
 
-                    <form>
+                    <form onSubmit={handlePagar}>
 
                         <div className="input-group">
                             <label>Número de tarjeta</label>
@@ -183,8 +369,16 @@ function Carrito(){
                             </div>
                         </div>
 
-                        <button type="submit" className="btn-save">
-                            Pagar
+                        <button
+                            type="submit"
+                            className="btn-save"
+                            disabled={procesandoPago}
+                        >
+                            {
+                                procesandoPago
+                                    ? "Procesando..."
+                                    : "Pagar"
+                            }
                         </button>
                     </form>
                 </div>

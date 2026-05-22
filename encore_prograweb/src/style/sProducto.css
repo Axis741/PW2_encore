@@ -120,6 +120,11 @@ nav a:hover{
     color: white;
 }
 
+.size-options .selected-size{
+    background: #8e75b6;
+    color: white;
+}
+
 /* Buy section */
 .buy-section{
     display: flex;
