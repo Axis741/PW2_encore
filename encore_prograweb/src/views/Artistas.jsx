@@ -380,7 +380,7 @@ function Artistas(){
                             </select>
                         </div>
 
-                        <button type="submit" className="btn-save">Eliminar Evento</button>
+                        <button type="submit" className="btn-save">Eliminar Artista</button>
                     </form>
                 </div>
             </div>
