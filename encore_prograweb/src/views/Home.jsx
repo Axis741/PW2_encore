@@ -5,7 +5,6 @@ import '../style/sHome.css'
 import { getProductos, crearProducto, updateProducto, getVariantesById, deleteProducto } from '../../../services/productosService';
 import {getArtistas} from '../../../services/artistasService';
 import { verificarSesion } from '../../../services/usuariosService';
-//import { verificarSesion } from '../../../controllers/users_controller';
 
 function Home() {
     const[producto, setProducto] = useState("");
@@ -23,6 +22,8 @@ function Home() {
     const [mensajeVisible, setMensajeVisible] = useState("");
     const [productos, setProductos] = useState([]);
     const [variantes, setVariantes] = useState([]);
+
+    const [busqueda, setBusqueda] = useState("");
 
      const fileInputeRef = useRef(null);
     
@@ -50,7 +51,7 @@ function Home() {
         const artistaFiltro = location.state?.artistaFiltro;
 
         useEffect(() => {
-            const fetchProductos = async() => {
+            const cargarProductos = async() => {
                 const res = await getProductos();
 
                 if(res?.success){
@@ -65,7 +66,7 @@ function Home() {
                 }
             };
 
-            fetchProductos();
+            cargarProductos();
         }, [artistaFiltro]);
 
          useEffect(() => {
@@ -129,17 +130,17 @@ function Home() {
     const handleSeleccionarProducto = async (idProducto) => {
         setProductoSeleccionado(idProducto);
 
-        const producto = productos.find(
+        const productoFind = productos.find(
             (e) => e._id === idProducto
         );
 
-        if(producto){
-            setProducto(producto.nombre_producto);
-            setPrecio(producto.precio);
-            setArtista(producto.id_artista?._id);
-            setTipo(producto.tipo);
-            setDescripcion(producto.descripcion);
-            setPreview(`http://localhost:8080/uploads/${producto.img_producto}`);
+        if(productoFind){
+            setProducto(productoFind.nombre_producto);
+            setPrecio(productoFind.precio);
+            setArtista(productoFind.id_artista?._id);
+            setTipo(productoFind.tipo);
+            setDescripcion(productoFind.descripcion);
+            setPreview(`http://localhost:8080/uploads/${productoFind.img_producto}`);
 
             const resVariantes = await getVariantesById(idProducto);
             if(resVariantes?.success){
@@ -175,6 +176,7 @@ function Home() {
         setArtista("");
         setTipo("");
         setTallas([]);
+        setStock("");
         setDescripcion("");
         setImagen(null);
         setPreview("");
@@ -187,13 +189,13 @@ function Home() {
     const cargarProductos = async () => {
         const res = await getProductos();
         if(res?.success){
-            setProducto(res.data);
+            setProductos(res.data);
         }
     };
 
-    useEffect(() => {
-        cargarProductos();
-    }, []);
+    // useEffect(() => {
+    //     cargarProductos();
+    // }, []);
 
     const handleGuardar=async(e)=>{
         e.preventDefault();
@@ -297,6 +299,12 @@ function Home() {
         }
     };
 
+    const productosFiltrados = productos.filter(
+        (producto) => producto.nombre_producto
+                    ?.toLowerCase()
+                    .includes(busqueda.toLowerCase())
+    );
+
     return(
         <>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
@@ -307,7 +315,11 @@ function Home() {
             </div>
 
             <nav>
-                <a href="/">MERCH</a>
+                <a href="#" onClick= {(e) => {
+                        e.preventDefault();
+                        navigate("/", { state: {} });
+                    }}
+                >MERCH</a>
                 <a href="/eventos">EVENTOS</a>
                 <a href="/artistas">ARTISTAS/BANDAS</a>
             </nav>
@@ -321,7 +333,7 @@ function Home() {
     
         <section className="search-section">
             <div className="search-box">
-                <input type="text" placeholder="Buscar..."/>
+                <input type="text" placeholder="Buscar..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)}/>
                 <i className="fa-solid fa-magnifying-glass"></i>
             </div>
         </section>
@@ -329,7 +341,7 @@ function Home() {
         {mensajeVisible && <p className='mensajeNotify'>{mensajeVisible}</p>}
 
         <main className="products">
-            {productos.map((producto) => (
+            {productosFiltrados.map((producto) => (
                 <div className='card' key={producto._id} onClick={() => navigate(`/producto/${producto._id}`)}>
                     <img src={`http://localhost:8080/uploads/${producto.img_producto}`} alt={producto.nombre_producto}/>
                 </div>
@@ -360,6 +372,9 @@ function Home() {
         <section class="admin-container">
 
             <div class="admin-card">
+                <button className='btnClose' onClick={limpiarDatos}>
+                    <i className="fa-solid fa-xmark"></i>
+                </button>
 
                 <h1>Subir Producto</h1>
 
@@ -454,6 +469,9 @@ function Home() {
         <section class="admin-container">
 
             <div class="admin-card">
+                <button className='btnClose' onClick={limpiarDatos}>
+                    <i className="fa-solid fa-xmark"></i>
+                </button>
 
                 <h1>Editar Producto</h1>
 
@@ -556,7 +574,10 @@ function Home() {
     {showDeleteModal && (
         <section class="admin-container">
 
-            <div class="admin-card">
+            <div class="admin-card-delete">
+                <button className='btnClose' onClick={limpiarDatos}>
+                    <i className="fa-solid fa-xmark"></i>
+                </button>
 
                 <h1>Eliminar Producto</h1>
 
@@ -585,7 +606,3 @@ function Home() {
 }
 
 export default Home
-    
-    
-// </body>
-// </html>
