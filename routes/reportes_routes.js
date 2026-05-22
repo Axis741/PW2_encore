@@ -27,7 +27,7 @@ router.route('/ventasGeneral')
 
 // REPORTE POR ARTISTA
 // GET /api/v1/reportes/ventas-por-artista/:id
-router.route('/reportes/ventas-por-artista/:id')
+router.route('/ventasPorArtista')
   .get(getVentasPorArtista);
 
 module.exports = router;

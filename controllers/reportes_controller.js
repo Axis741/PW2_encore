@@ -53,7 +53,37 @@ exports.getTotalesTablas = async (req, res) => {
 
 exports.getVentasGeneral = async (req, res) => {
   try {
-    const reportePorTipo = await compraModel.aggregate([
+    const stockPorTipo = await productoModel.aggregate([
+      {
+        $lookup: {
+          from: "productovariantes",
+          localField: "_id",
+          foreignField: "id_producto",
+          as: "variantes"
+        }
+      },
+      {
+        $unwind: "$variantes"
+      },
+      {
+        $group: {
+          _id: "$tipo",
+          stockTotal: {
+            $sum: "$variantes.stock"
+          },
+          valorTotalStock: {
+            $sum: {
+              $multiply: [
+                "$precio",
+                "$variantes.stock"
+              ]
+            }
+          }
+        }
+      }
+    ]);
+
+    const vendidoPorTipo = await compraModel.aggregate([
       {
         $match: {
           estado: {$ne: "cancelado"}
@@ -71,15 +101,101 @@ exports.getVentasGeneral = async (req, res) => {
         }
       },
       {
-        $unwind: "producto"
+        $unwind: "$producto"
       },{
         $group: {
           _id: "$producto.tipo",
+          cantidadVendida: {
+            $sum: "$items.cantidad"
+          },
+          valorVendido: {
+            $sum: {
+              $multiply: [
+                "$items.cantidad",
+                "$items.precioUnitario"
+              ]
+            }
+          }
+        }
+      }
+    ]);
+
+    const reporteFinal = stockPorTipo.map((stockItem) => {
+
+      const vendido = vendidoPorTipo.find(
+        (v) => v._id === stockItem._id
+      );
+
+      const valorVendido = vendido?.valorVendido || 0;
+
+      const porcentaje =
+        stockItem.valorTotalStock > 0
+          ? (valorVendido * 100) / stockItem.valorTotalStock
+          : valorVendido > 0
+            ? 100
+            : 0;
+
+      return {
+        tipo: stockItem._id,
+        stockTotal: stockItem.stockTotal,
+        valorTotalStock: stockItem.valorTotalStock,
+        valorVendido,
+        porcentaje
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data: reporteFinal
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// @desc    Reporte de ventas por artista
+// @route   GET /api/v1/reportes/ventas-por-artista/:id
+// @access  Admin
+exports.getVentasPorArtista = async (req, res) => {
+  try {
+    const reportePorArtista = await compraModel.aggregate([
+      {
+        $match: {
+          estado: {$ne: "cancelado"}
+        }
+      },
+      {
+        $unwind: "$items"
+      },
+      {
+        $lookup: {
+          from: "artistas",
+          localField: "items.id_artista",
+          foreignField: "_id",
+          as: "artista"
+        }
+      },
+      {
+        $unwind: "$artista"
+      },
+      {
+        $group: {
+          _id: "$items.id_artista",
+          nombreArtista: {
+            $first: "$artista.nombre"
+          },
+          imagenArtista: {
+            $first: "$artista.foto"
+          },
           totalVentas: {
             $sum: {
               $multiply: [
                 "$items.cantidad",
-                "items.precioUnitario"
+                "$items.precioUnitario"
               ]
             }
           }
@@ -94,78 +210,7 @@ exports.getVentasGeneral = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: reportePorTipo
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
-
-
-
-// @desc    Reporte de ventas por artista
-// @route   GET /api/v1/reportes/ventas-por-artista/:id
-// @access  Admin
-exports.getVentasPorArtista = async (req, res) => {
-  try {
-    const artistaId = req.params.id;
-
-    const reporte = await compraModel.aggregate([
-      // Descomponer items
-      { $unwind: "$items" },
-
-      // Traer info de variante
-      {
-        $lookup: {
-          from: "productovariantes",
-          localField: "items.id_variante",
-          foreignField: "_id",
-          as: "variante"
-        }
-      },
-      { $unwind: "$variante" },
-
-      // Traer producto
-      {
-        $lookup: {
-          from: "productos",
-          localField: "variante.id_producto",
-          foreignField: "_id",
-          as: "producto"
-        }
-      },
-      { $unwind: "$producto" },
-
-      // Filtrar por artista
-      {
-        $match: {
-          "producto.id_artista": require("mongoose").Types.ObjectId(artistaId)
-        }
-      },
-
-      // Agrupar resultados
-      {
-        $group: {
-          _id: "$producto.id_artista",
-          totalVentas: {
-            $sum: {
-              $multiply: ["$items.cantidad", "$items.precioUnitario"]
-            }
-          },
-          totalProductosVendidos: { $sum: "$items.cantidad" }
-        }
-      }
-    ]);
-
-    res.status(200).json({
-      success: true,
-      data: reporte[0] || {
-        totalVentas: 0,
-        totalProductosVendidos: 0
-      }
+      data: reportePorArtista
     });
 
   } catch (error) {
@@ -175,42 +220,3 @@ exports.getVentasPorArtista = async (req, res) => {
     });
   }
 };
-
-
-
-// @desc    Totales vendidos
-// @route   GET /api/v1/reportes/totales
-// @access  Admin
-// exports.getTotales = async (req, res) => {
-//   try {
-//     const reporte = await compraModel.aggregate([
-//       { $unwind: "$items" },
-//       {
-//         $group: {
-//           _id: null,
-//           totalIngresos: {
-//             $sum: {
-//               $multiply: ["$items.cantidad", "$items.precioUnitario"]
-//             }
-//           },
-//           totalProductosVendidos: { $sum: "$items.cantidad" }
-//         }
-//       }
-//     ]);
-
-//     res.status(200).json({
-//       success: true,
-//       data: reporte[0] || {
-//         totalIngresos: 0,
-//         totalProductosVendidos: 0
-//       }
-//     });
-
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// };
-

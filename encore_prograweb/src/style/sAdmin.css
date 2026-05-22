@@ -271,6 +271,18 @@ nav a{
     gap: 20px;
 }
 
+.chartScale{
+    height: 320px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    color: rgba(255,255,255,.6);
+    font-size: 13px;
+    font-weight: 500;
+    padding-bottom: 25px;
+}
+
 .fakeChart{
     flex: 1;
     height: 320px;
@@ -278,22 +290,6 @@ nav a{
     align-items: flex-end;
     justify-content: space-around;
     gap: 18px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid rgba(255,255,255,.08);
-}
-
-.chartScale{
-    height: 320px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-
-    color: rgba(255,255,255,.6);
-    font-size: 13px;
-    font-weight: 500;
-
-    padding-bottom: 10px;
 }
 
 .barContainer{
@@ -312,14 +308,19 @@ nav a{
     transition: .3s;
 }
 
-.bar:hover{
-    transform: translateY(-5px);
-}
-
 .barValue{
     margin-bottom: 10px;
     color: white;
     font-weight: 600;
+}
+
+.barArea{
+    height: 260px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    border-bottom: 2px solid rgba(255,255,255,.08);
 }
 
 .barLabel{

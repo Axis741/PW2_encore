@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { verificarSesion } from '../../../services/usuariosService';
-import { getTotalesTablas } from '../../../services/reportesService';
+import { getTotalesTablas, getVentasGeneral, getVentasPorArtista } from '../../../services/reportesService';
 import Logo from '../assets/titulo-encore.png'
 import '../style/sAdmin.css'
 
@@ -15,6 +15,9 @@ function Admin(){
         totalVentas: 0,
         totalIngresos: 0
     });
+
+    const [ventasGenerales, setVentasGenerales] = useState([]);
+    const [ventasArtistas, setVentasArtistas] = useState([]);
 
     useEffect(() => {
 
@@ -44,17 +47,41 @@ function Admin(){
 
     }, []);
 
+    const fetchTotalesTablas = async () => {
+        const res = await getTotalesTablas();
+
+        if(res?.success){
+            setTotales(res.data);
+        }
+    };
+
+    const fetchVentasGenerales = async () => {
+        const res = await getVentasGeneral();
+        if(res?.success){
+            setVentasGenerales(res.data);
+        }
+    };
+
+    const fetchVentasPorArtista = async () => {
+        const res = await getVentasPorArtista();
+        if(res?.success){
+            setVentasArtistas(res.data);
+        }
+    };
+
     useEffect(() => {
-        const fetchTotalesTablas = async () => {
-            const res = await getTotalesTablas();
-
-            if(res?.success){
-                setTotales(res.data);
-            }
-        };
-
         fetchTotalesTablas();
+        fetchVentasGenerales();
+        fetchVentasPorArtista();
     }, []);
+
+    const ropa = ventasGenerales.find((v) => v.tipo === "ropa");
+    const accesorios = ventasGenerales.find((v) => v.tipo === "accesorios");
+    const discos = ventasGenerales.find((v) => v.tipo === "discos");
+    const lightstick = ventasGenerales.find((v) => v.tipo === "lightstick");
+    const otro = ventasGenerales.find((v) => v.tipo === "otro");
+
+    console.log(ventasGenerales);
 
     return(
         <>
@@ -157,32 +184,42 @@ function Admin(){
                         <div className="fakeChart">
 
                             <div className="barContainer">
-                                <span className="barValue">$1200</span>
-                                <div className="bar" style={{height: "40%"}}></div>
+                                <div className='barArea'>
+                                    <span className="barValue">${ropa?.valorVendido || 0}</span>
+                                    <div className="bar" style={{height: `${ropa?.porcentaje || 0}%`}}></div>
+                                </div>
                                 <span className="barLabel">Ropa</span>
                             </div>
 
                             <div className="barContainer">
-                                <span className="barValue">$2500</span>
-                                <div className="bar" style={{height: "70%"}}></div>
+                                <div className='barArea'>
+                                    <span className="barValue">${accesorios?.valorVendido || 0}</span>
+                                    <div className="bar" style={{height: `${accesorios?.porcentaje || 0}%`}}></div>
+                                </div>
                                 <span className="barLabel">Accesorios</span>
                             </div>
 
                             <div className="barContainer">
-                                <span className="barValue">$1800</span>
-                                <div className="bar" style={{height: "55%"}}></div>
+                                <div className='barArea'>
+                                    <span className="barValue">${discos?.valorVendido || 0}</span>
+                                    <div className="bar" style={{height: `${discos?.porcentaje || 0}%`}}></div>
+                                </div>
                                 <span className="barLabel">Discos</span>
                             </div>
 
                             <div className="barContainer">
-                                <span className="barValue">$3200</span>
-                                <div className="bar" style={{height: "90%"}}></div>
+                                <div className='barArea'>
+                                    <span className="barValue">${lightstick?.valorVendido || 0}</span>
+                                    <div className="bar" style={{height: `${lightstick?.porcentaje || 0}%`}}></div>
+                                </div>
                                 <span className="barLabel">Lightstick</span>
                             </div>
 
                             <div className="barContainer">
-                                <span className="barValue">$2100</span>
-                                <div className="bar" style={{height: "100%"}}></div>
+                                <div className='barArea'>
+                                    <span className="barValue">${otro?.valorVendido || 0}</span>
+                                    <div className="bar" style={{height: `${otro?.porcentaje || 0}%`}}></div>
+                                </div>
                                 <span className="barLabel">Otro</span>
                             </div>
 
@@ -196,72 +233,25 @@ function Admin(){
 
                     <h2>Ventas p/ Artistas</h2>
 
-                    <div className="topArtist">
-                        <img
-                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStxy_arH94WcVTL_TEp4xCxJQQhDNUHz9Q5vh3bjxZQ1lu0r976eCn4Ep2Ed_1UITdf-2tLCes5Fx1EOpu0uUqwK7VlcNsY8pw7P5zbw&s=10"
-                            alt=""
-                        />
-                        <div>
-                            <h3>Coldplay</h3>
-                            <p>$15,000 vendidos</p>
-                        </div>
-                    </div>
+                    {
+                        ventasArtistas.map((artista) => (
 
-                    <div className="topArtist">
-                        <img
-                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStxy_arH94WcVTL_TEp4xCxJQQhDNUHz9Q5vh3bjxZQ1lu0r976eCn4Ep2Ed_1UITdf-2tLCes5Fx1EOpu0uUqwK7VlcNsY8pw7P5zbw&s=10"
-                            alt=""
-                        />
-                        <div>
-                            <h3>Coldplay</h3>
-                            <p>$15,000 vendidos</p>
-                        </div>
-                    </div>
+                            <div
+                                className="topArtist"
+                                key={artista._id}
+                            >
+                               <img
+                                    src={`http://localhost:8080/uploads/${artista.imagenArtista}`}
+                                    alt=""
+                                />
 
-                    <div className="topArtist">
-                        <img
-                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStxy_arH94WcVTL_TEp4xCxJQQhDNUHz9Q5vh3bjxZQ1lu0r976eCn4Ep2Ed_1UITdf-2tLCes5Fx1EOpu0uUqwK7VlcNsY8pw7P5zbw&s=10"
-                            alt=""
-                        />
-                        <div>
-                            <h3>Coldplay</h3>
-                            <p>$15,000 vendidos</p>
-                        </div>
-                    </div>
-
-                    <div className="topArtist">
-                        <img
-                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStxy_arH94WcVTL_TEp4xCxJQQhDNUHz9Q5vh3bjxZQ1lu0r976eCn4Ep2Ed_1UITdf-2tLCes5Fx1EOpu0uUqwK7VlcNsY8pw7P5zbw&s=10"
-                            alt=""
-                        />
-                        <div>
-                            <h3>Coldplay</h3>
-                            <p>$15,000 vendidos</p>
-                        </div>
-                    </div>
-
-                    <div className="topArtist">
-                        <img
-                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStxy_arH94WcVTL_TEp4xCxJQQhDNUHz9Q5vh3bjxZQ1lu0r976eCn4Ep2Ed_1UITdf-2tLCes5Fx1EOpu0uUqwK7VlcNsY8pw7P5zbw&s=10"
-                            alt=""
-                        />
-                        <div>
-                            <h3>Coldplay</h3>
-                            <p>$15,000 vendidos</p>
-                        </div>
-                    </div>
-
-                    <div className="topArtist">
-                        <img
-                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStxy_arH94WcVTL_TEp4xCxJQQhDNUHz9Q5vh3bjxZQ1lu0r976eCn4Ep2Ed_1UITdf-2tLCes5Fx1EOpu0uUqwK7VlcNsY8pw7P5zbw&s=10"
-                            alt=""
-                        />
-                        <div>
-                            <h3>Coldplay</h3>
-                            <p>$15,000 vendidos</p>
-                        </div>
-                    </div>
-
+                                <div>
+                                    <h3>{artista.nombreArtista}</h3>
+                                    <p>${artista.totalVentas} vendidos</p>
+                                </div>
+                            </div>
+                        ))
+                    }
                 </div>
 
             </div>
@@ -269,8 +259,6 @@ function Admin(){
         </section>
         
         </>
-
-        
     )
 }
 
