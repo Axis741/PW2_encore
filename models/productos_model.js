@@ -36,6 +36,12 @@ const productosSchema = new mongoose.Schema({
   fecha_creacion: {
     type: Date,
     default: Date.now
+  },
+
+  estado: {
+    type: String,
+    enum: ["activo", "eliminado"],
+    default: "activo"
   }
 });
 

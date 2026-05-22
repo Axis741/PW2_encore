@@ -129,27 +129,100 @@ exports.createProducto = async (req, res) => {
 // @desc    Update product
 // @route   PUT /api/v1/productos/:id
 // @access  Public
+
+const borrarImagen = (file) => {
+  if(file){
+    const rutaImagen = path.join(
+      __dirname,
+      "../uploads",
+      file.filename
+    );
+
+    fs.unlink(rutaImagen, (err) => {
+      if(err){
+        console.error("Error al borrar imagen:", err);
+      }
+    });
+  }
+};
+
 exports.updateProducto = async (req, res) => {
   try {
-    const producto = await productosModel.findByIdAndUpdate(
-      req.params.id,
-      req.body,
+    const {id} = req.params;
+    
+    const productoActual = await productosModel.findById(id);
+
+    if(!productoActual){
+      borrarImagen(req.file);
+
+      return res.status(400).json({
+        success: false,
+        message: "Producto no encontrado"
+      });
+    }
+
+    const datosActualizados ={
+      nombre_producto: req.body.producto,
+      precio: req.body.precio,
+      id_artista: req.body.id_artista,
+      tipo: req.body.tipo,
+      descripcion: req.body.descripcion
+    };
+
+    if(req.file){
+      if(productoActual.imagen){
+        const rutaVieja = path.join(
+          __dirname,
+          "../uploads",
+          productoActual.img_producto
+        );
+
+        fs.unlink(rutaVieja, (err) => {
+          if(err){
+            console.log(err);
+          }
+        });
+      }
+      datosActualizados.img_producto = req.file.filename;
+    }
+
+    const productoActualizado = await productosModel.findByIdAndUpdate(
+      id,
+      datosActualizados,
       {
         new: true,
         runValidators: true
       }
     );
 
-    if (!producto) {
-      return res.status(404).json({
-        success: false,
-        message: 'Producto no encontrado'
-      });
+    await productoVariantesModel.deleteMany({
+      id_producto: id
+    });
+
+    let variantesProducto = [];
+
+    if(req.body.tipo === "ropa"){
+      const variantes = JSON.parse(req.body.variantes);
+        variantesProducto = variantes.map((v) =>({
+        id_producto: id,
+        talla: v.talla,
+        stock: Number(v.stock)
+      }));
+    }else{
+      variantesProducto = [{
+        id_producto: id,
+        talla: null,
+        stock: Number(req.body.stock)
+      }];
     }
+
+    await productoVariantesModel.insertMany(
+      variantesProducto
+    );
 
     res.status(200).json({
       success: true,
-      data: producto
+      data: productoActualizado
     });
 
   } catch (error) {
@@ -163,18 +236,27 @@ exports.updateProducto = async (req, res) => {
 // @access  Public
 exports.deleteProducto = async (req, res) => {
   try {
-    const producto = await productosModel.findByIdAndDelete(req.params.id);
+    const {id} = req.params;
 
-    if (!producto) {
+    await productoVariantesModel.deleteMany({
+      id_producto: id
+    });
+    
+    const productoEliminado = await productosModel.findByIdAndDelete(
+      id,
+      { estado: "eliminado" },
+      {new: true}
+    );
+
+    if (!productoEliminado) {
       return res.status(404).json({
         success: false,
         message: 'Producto no encontrado'
       });
     }
-
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: 'Producto eliminado correctamente'
+      message: "Producto eliminado"
     });
 
   } catch (error) {
