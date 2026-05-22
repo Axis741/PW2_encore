@@ -27,6 +27,14 @@ function Carrito(){
 
     const [mensajeVisible, setMensajeVisible] = useState("");
 
+    const [numeroTarjeta, setNumeroTarjeta] = useState("");
+
+    const [nombreTitular, setNombreTitular] = useState("");
+
+    const [fechaExp, setFechaExp] = useState("");
+
+    const [cvv, setCvv] = useState("");
+
     useEffect(() => {
         if(mensajeVisible){
             const timer = setTimeout(() => {
@@ -113,6 +121,50 @@ function Carrito(){
 
         e.preventDefault();
 
+        // SOLO NÚMEROS
+        const soloNumeros = /^[0-9]+$/;
+
+        // TARJETA
+        if(
+            !soloNumeros.test(numeroTarjeta) ||
+            numeroTarjeta.length !== 16
+        ){
+            setMensajeVisible(
+                "La tarjeta debe tener 16 dígitos numéricos"
+            );
+            return;
+        }
+
+        // FECHA
+        if(
+            !soloNumeros.test(fechaExp) ||
+            fechaExp.length !== 4
+        ){
+            setMensajeVisible(
+                "La fecha debe tener 4 dígitos (MMAA)"
+            );
+            return;
+        }
+
+        // CVV
+        if(
+            !soloNumeros.test(cvv) ||
+            cvv.length !== 3
+        ){
+            setMensajeVisible(
+                "El CVV debe tener 3 dígitos"
+            );
+            return;
+        }
+
+        // NOMBRE
+        if(nombreTitular.trim().length < 3){
+            setMensajeVisible(
+                "Ingrese el nombre del titular"
+            );
+            return;
+        }
+
         try{
 
             setProcesandoPago(true);
@@ -126,6 +178,11 @@ function Carrito(){
                 setMensajeVisible("Compra realizada correctamente");
 
                 setShowModal(false);
+
+                setNumeroTarjeta("");
+                setNombreTitular("");
+                setFechaExp("");
+                setCvv("");
 
                 await fetchCarrito(usuarioInfo.id);
 
@@ -337,8 +394,14 @@ function Carrito(){
                             <label>Número de tarjeta</label>
                             <input 
                                 type="text"
-                                placeholder="1234 5678 9012 3456"
-                                maxLength="19"
+                                placeholder="1234567812345678"
+                                maxLength="16"
+                                value={numeroTarjeta}
+                                onChange={(e) =>
+                                    setNumeroTarjeta(
+                                        e.target.value.replace(/\D/g, "")
+                                    )
+                                }
                                 required
                             />
                         </div>
@@ -348,6 +411,10 @@ function Carrito(){
                             <input 
                                 type="text"
                                 placeholder="Como aparece en la tarjeta"
+                                value={nombreTitular}
+                                onChange={(e) =>
+                                    setNombreTitular(e.target.value)
+                                }
                                 required
                             />
                         </div>
@@ -357,8 +424,14 @@ function Carrito(){
                                 <label>Fecha de expiración</label>
                                 <input 
                                     type="text"
-                                    placeholder="MM/AA"
-                                    maxLength="5"
+                                    placeholder="MMAA"
+                                    maxLength="4"
+                                    value={fechaExp}
+                                    onChange={(e) =>
+                                        setFechaExp(
+                                            e.target.value.replace(/\D/g, "")
+                                        )
+                                    }
                                     required
                                 />
                             </div>
@@ -369,6 +442,12 @@ function Carrito(){
                                     type="password"
                                     placeholder="123"
                                     maxLength="3"
+                                    value={cvv}
+                                    onChange={(e) =>
+                                        setCvv(
+                                            e.target.value.replace(/\D/g, "")
+                                        )
+                                    }
                                     required
                                 />
                             </div>
