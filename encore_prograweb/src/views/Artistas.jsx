@@ -214,13 +214,6 @@ function Artistas(){
 
         {mensajeVisible && <p className='mensajeNotify'>{mensajeVisible}</p>}
 
-        <section className="search-section">
-            <div className="search-box">
-                <input type="text" placeholder="Buscar..."/>
-                <i className="fa-solid fa-magnifying-glass"></i>
-            </div>
-        </section>
-
         <main className="artists">
             {artistas.map((artista) => (
                 <button className="artist-card" key={artista._id} onClick={() => navigate("/", {
