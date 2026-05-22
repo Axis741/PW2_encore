@@ -352,15 +352,15 @@ function Home() {
             <button className='btn_Add' onClick={toggleAdminOptions}><i class='fa-solid fa-gear'></i></button>
             {showAdminOptions && (
                 <div className='adminOptions'>
-                    <button className='adminOptionsBtn' onClick={() => {setShowModal(true); setShowAdminOptions(false); }}>
+                    <button className='adminOptionBtn' onClick={() => {setShowModal(true); setShowAdminOptions(false); }}>
                         <i className='fa-solid fa-plus'></i>Subir Producto
                     </button>
 
-                    <button className='adminOptionsBtn' onClick={() => {setShowEditModal(true); setShowAdminOptions(false); }}>
+                    <button className='adminOptionBtn' onClick={() => {setShowEditModal(true); setShowAdminOptions(false); }}>
                         <i className='fa-solid fa-pen'></i>Actualizar Producto
                     </button>
 
-                    <button className='adminOptionsBtn' onClick={() => {setShowDeleteModal(true); setShowAdminOptions(false); }}>
+                    <button className='adminOptionBtn delete' onClick={() => {setShowDeleteModal(true); setShowAdminOptions(false); }}>
                         <i className='fa-solid fa-trash'></i>Eliminar Producto
                     </button>
                 </div>
