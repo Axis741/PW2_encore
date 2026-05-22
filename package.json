@@ -1,0 +1,32 @@
+{
+  "name": "encore-merch_pia",
+  "version": "1.0.0",
+  "description": "Programación Web II\r \"Encore Merch\" es una página web pensada para la venta de mercancia de artistas musicales.\r Integrantes:\r Alexia Núñez Cantú  2049159  G.55\r Mariana Regalado Arellano  2049197  G.55\r Héctor Alexis Flores Castillo 2002548 G.57",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Axis741/PW2_encore.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Axis741/PW2_encore/issues"
+  },
+  "homepage": "https://github.com/Axis741/PW2_encore#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.2.4",
+    "multer": "^2.1.1"
+  }
+}
