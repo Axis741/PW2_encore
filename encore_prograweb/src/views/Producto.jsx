@@ -18,6 +18,15 @@ function Producto(){
 
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if(mensaje){
+            const timer = setTimeout(() => {
+                setMensaje("");
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    },[mensaje]);
+
     const handleAgregarCarrito = async () => {
 
         const res = await verificarSesion();

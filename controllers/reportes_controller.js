@@ -5,23 +5,97 @@ const productoModel = require("../models/productos_model");
 // @desc    Reporte general de ventas
 // @route   GET /api/v1/reportes/ventas-general
 // @access  Admin
-exports.getVentasGeneral = async (req, res) => {
+
+exports.getTotalesTablas = async (req, res) => {
   try {
-    const reporte = await compraModel.aggregate([
+    const totalArtistas = await artistaModel.countDocuments({
+      estado: { $ne: "eliminado"}
+    });
+
+    const totalProductos = await productoModel.countDocuments();
+
+    const totalVentas = await compraModel.countDocuments({
+      estado: {$ne: "cancelado"}
+    });
+
+    const totalIngresos = await compraModel.aggregate([
+      {
+        $match: {
+          estado: {$ne: "cancelado"}
+        }
+      },
       {
         $group: {
           _id: null,
-          totalVentas: { $sum: "$total" },
-          totalOrdenes: { $sum: 1 }
+          totalIngresos: {
+            $sum: "$total"
+          }
+        }
+      }
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        totalArtistas,
+        totalProductos,
+        totalVentas,
+        totalIngresos: totalIngresos[0]?.totalIngresos || 0
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+exports.getVentasGeneral = async (req, res) => {
+  try {
+    const reportePorTipo = await compraModel.aggregate([
+      {
+        $match: {
+          estado: {$ne: "cancelado"}
+        }
+      },
+      {
+        $unwind: "$items"
+      },
+      {
+        $lookup: {
+          from: "productos",
+          localField: "items.id_producto",
+          foreignField: "_id",
+          as: "producto"
+        }
+      },
+      {
+        $unwind: "producto"
+      },{
+        $group: {
+          _id: "$producto.tipo",
+          totalVentas: {
+            $sum: {
+              $multiply: [
+                "$items.cantidad",
+                "items.precioUnitario"
+              ]
+            }
+          }
+        }
+      },
+      {
+        $sort: {
+          totalVentas: -1
         }
       }
     ]);
 
     res.status(200).json({
       success: true,
-      data: reporte[0] || { totalVentas: 0, totalOrdenes: 0 }
+      data: reportePorTipo
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -107,58 +181,36 @@ exports.getVentasPorArtista = async (req, res) => {
 // @desc    Totales vendidos
 // @route   GET /api/v1/reportes/totales
 // @access  Admin
-exports.getTotales = async (req, res) => {
-  try {
-    const reporte = await compraModel.aggregate([
-      { $unwind: "$items" },
-      {
-        $group: {
-          _id: null,
-          totalIngresos: {
-            $sum: {
-              $multiply: ["$items.cantidad", "$items.precioUnitario"]
-            }
-          },
-          totalProductosVendidos: { $sum: "$items.cantidad" }
-        }
-      }
-    ]);
+// exports.getTotales = async (req, res) => {
+//   try {
+//     const reporte = await compraModel.aggregate([
+//       { $unwind: "$items" },
+//       {
+//         $group: {
+//           _id: null,
+//           totalIngresos: {
+//             $sum: {
+//               $multiply: ["$items.cantidad", "$items.precioUnitario"]
+//             }
+//           },
+//           totalProductosVendidos: { $sum: "$items.cantidad" }
+//         }
+//       }
+//     ]);
 
-    res.status(200).json({
-      success: true,
-      data: reporte[0] || {
-        totalIngresos: 0,
-        totalProductosVendidos: 0
-      }
-    });
+//     res.status(200).json({
+//       success: true,
+//       data: reporte[0] || {
+//         totalIngresos: 0,
+//         totalProductosVendidos: 0
+//       }
+//     });
 
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: error.message
+//     });
+//   }
+// };
 
-exports.getTotalesTablas = async (req, res) => {
-  try {
-    const totalArtistas = await artistaModel.countDocuments({
-      estado: { $ne: "eliminado"}
-    });
-
-    const totalProductos = await productoModel.countDocuments();
-
-    return res.status(200).json({
-      success: true,
-      data: {
-        totalArtistas,
-        totalProductos
-      }
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};

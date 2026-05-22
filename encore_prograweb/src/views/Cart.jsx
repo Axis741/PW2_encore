@@ -25,6 +25,17 @@ function Carrito(){
     const [loading, setLoading] = useState(true);
     const [procesandoPago, setProcesandoPago] = useState(false);
 
+    const [mensajeVisible, setMensajeVisible] = useState("");
+
+    useEffect(() => {
+        if(mensajeVisible){
+            const timer = setTimeout(() => {
+                setMensajeVisible("");
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    },[mensajeVisible]);
+
     const fetchCarrito = async (userId) => {
 
         const carritoRes = await getCarritoByUsuario(userId);
@@ -112,27 +123,21 @@ function Carrito(){
 
             if(res?.success){
 
-                alert("Compra realizada correctamente");
+                setMensajeVisible("Compra realizada correctamente");
 
                 setShowModal(false);
 
                 await fetchCarrito(usuarioInfo.id);
 
             }else{
-
-                alert(
-                    res?.message ||
-                    "Error al procesar compra"
-                );
-
+                setMensajeVisible(res?.message || "Error al procesar la compra");
             }
 
         }catch(error){
 
             console.error(error);
-
-            alert("Error al procesar pago");
-
+            setMensajeVisible("Error al procesar el pago");
+            
         }finally{
 
             setProcesandoPago(false);
@@ -179,6 +184,8 @@ function Carrito(){
             </div>
         </header>
 
+        {mensajeVisible && <p className='mensajeNotify'>{mensajeVisible}</p>}
+
         <main class="cart-container">
 
             <h1 class="cart-title">
@@ -186,123 +193,121 @@ function Carrito(){
                 CARRITO DE COMPRAS
             </h1>
 
-            <div class="cart-content">
+            <div className="cart-content">
 
-                {carrito?.items?.length > 0 ? (
+                <div className="cart-items">
 
-                    carrito.items.map((item) => {
+                    {carrito?.items?.length > 0 ? (
 
-                        const producto =
-                            item.id_variante?.id_producto;
+                        carrito.items.map((item) => {
 
-                        //if(!producto){window.location.reload()}
-                        
+                            const producto = item.id_variante?.id_producto;
 
-                        return(
+                            return(
 
-                            <div className="cart-item" key={item._id}>
+                                <div className="cart-item" key={item._id}>
 
-                                <img
-                                    src={`http://localhost:8080/uploads/${producto.img_producto}`}
-                                    alt={producto.nombre_producto}
-                                />
+                                    <img
+                                        src={`http://localhost:8080/uploads/${producto.img_producto}`}
+                                        alt={producto.nombre_producto}
+                                    />
 
-                                <div className="item-info">
+                                    <div className="item-info">
 
-                            
-
-                                    <p>
-                                        {producto.nombre_producto}
-                                    </p>
-
-                                    {item.id_variante?.talla && (
                                         <p>
-                                            <strong>Talla:</strong>
-                                            {" "}
-                                            {item.id_variante.talla}
+                                            {producto.nombre_producto}
                                         </p>
-                                    )}
 
-                                    <p>
-                                        <strong>Status:</strong>
-                                        {" "}
-                                        In Stock
-                                    </p>
+                                        {item.id_variante?.talla && (
+                                            <p>
+                                                <strong>Talla:</strong>
+                                                {" "}
+                                                {item.id_variante.talla}
+                                            </p>
+                                        )}
 
-                                    <p>
-                                        <strong>Delivery:</strong>
-                                        {" "}
-                                        Arrives in 3-5 days
-                                    </p>
+                                        <p>
+                                            <strong>Status:</strong>
+                                            {" "}
+                                            In Stock
+                                        </p>
+
+                                        <p>
+                                            <strong>Delivery:</strong>
+                                            {" "}
+                                            Arrives in 3-5 days
+                                        </p>
+
+                                    </div>
+
+                                    <div className="item-quantity">
+
+                                        <button
+                                            onClick={() =>
+                                                actualizarCantidad(
+                                                    item.id_variante._id,
+                                                    item.cantidad - 1
+                                                )
+                                            }
+                                        >
+                                            -
+                                        </button>
+
+                                        <span>{item.cantidad}</span>
+
+                                        <button
+                                            onClick={() =>
+                                                actualizarCantidad(
+                                                    item.id_variante._id,
+                                                    item.cantidad + 1
+                                                )
+                                            }
+                                        >
+                                            +
+                                        </button>
+
+                                    </div>
+
+                                    <div className="item-price">
+
+                                        $
+                                        {(
+                                            producto.precio *
+                                            item.cantidad
+                                        ).toFixed(2)}
+
+                                        <button
+                                            className="btn-delete"
+                                            onClick={() =>
+                                                eliminarProducto(
+                                                    item.id_variante._id
+                                                )
+                                            }
+                                        >
+                                            <i className="fa-solid fa-trash"></i>
+                                        </button>
+
+                                    </div>
 
                                 </div>
+                            );
+                        })
 
-                                <div className="item-quantity">
+                    ) : (
+                        <h2>Tu carrito está vacío</h2>
+                    )}
 
-                                    <button
-                                        onClick={() =>
-                                            actualizarCantidad(
-                                                item.id_variante._id,
-                                                item.cantidad - 1
-                                            )
-                                        }
-                                    >
-                                        -
-                                    </button>
+                </div>
 
-                                    <span>{item.cantidad}</span>
+                <div className="cart-summary">
 
-                                    <button
-                                        onClick={() =>
-                                            actualizarCantidad(
-                                                item.id_variante._id,
-                                                item.cantidad + 1
-                                            )
-                                        }
-                                    >
-                                        +
-                                    </button>
-
-                                </div>
-
-                                <div className="item-price">
-
-                                    $
-                                    {(
-                                        producto.precio *
-                                        item.cantidad
-                                    ).toFixed(2)}
-
-                                    <button
-                                        className="btn-delete"
-                                        onClick={() =>
-                                            eliminarProducto(
-                                                item.id_variante._id
-                                            )
-                                        }
-                                    >
-                                        <i className="fa-solid fa-trash"></i>
-                                    </button>
-
-                                </div>
-
-                            </div>
-                        );
-                    })
-
-                ) : (
-
-                    <h2>Tu carrito está vacío</h2>
-
-                )}
-
-                <div class="cart-summary">
                     <h3>
                         Subtotal
                         <span>
                             ${subtotal?.toFixed(2)}
                         </span>
                     </h3>
+
                     <p>Shipping calculated at checkout</p>
 
                     <button

@@ -11,7 +11,9 @@ function Admin(){
 
     const [totales, setTotales] = useState({
         totalArtistas: 0,
-        totalProductos: 0
+        totalProductos: 0,
+        totalVentas: 0,
+        totalIngresos: 0
     });
 
     useEffect(() => {
@@ -94,7 +96,7 @@ function Admin(){
                     </div>
 
                     <div>
-                        <h2>$45,890</h2>
+                        <h2>${totales.totalIngresos}</h2>
                         <span>Ingresos Totales</span>
                     </div>
                 </div>
@@ -105,7 +107,7 @@ function Admin(){
                     </div>
 
                     <div>
-                        <h2>1,245</h2>
+                        <h2>{totales.totalVentas}</h2>
                         <span>Ventas</span>
                     </div>
                 </div>

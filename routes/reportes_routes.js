@@ -4,7 +4,6 @@ const router = express.Router();
 const {
   getVentasGeneral,
   getVentasPorArtista,
-  getTotales,
   getTotalesTablas
 } = require('../controllers/reportes_controller');
 
@@ -15,10 +14,14 @@ router.use((req, res, next) => {
   next();
 });
 
+// TOTALES GENERALES
+// GET /api/v1/reportes/totales
+router.route('/totalesTablas')
+  .get(getTotalesTablas);
 
 // REPORTE GENERAL DE VENTAS
 // GET /api/v1/reportes/ventas-general
-router.route('/reportes/ventas-general')
+router.route('/ventasGeneral')
   .get(getVentasGeneral);
 
 
@@ -26,14 +29,5 @@ router.route('/reportes/ventas-general')
 // GET /api/v1/reportes/ventas-por-artista/:id
 router.route('/reportes/ventas-por-artista/:id')
   .get(getVentasPorArtista);
-
-
-// TOTALES GENERALES
-// GET /api/v1/reportes/totales
-router.route('/totales')
-  .get(getTotales);
-
-router.route('/totalesTablas')
-  .get(getTotalesTablas);
 
 module.exports = router;
